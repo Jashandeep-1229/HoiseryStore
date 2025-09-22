@@ -24,6 +24,7 @@
                                 <input type="date" name="date" id="date" autofocus  class="form-control" value="{{date('Y-m-d')}}" required>
                             </div>
                             <div class="col-md-3">
+                                <h6>Select Income <span class="badge badge-success text-white p-1" onclick="add_income()"><i class="fa fa-plus"></i></span> </h6>
                                 <select class="js-example-basic-single" name="income_id" id="income_id" required>
                                     <option value="" selected disabled>Select Income</option>
                                     @foreach($account_income as $acc)
@@ -32,6 +33,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
+                                <h6>Select Payment <span class="badge badge-success text-white p-1" onclick="add_payment()"><i class="fa fa-plus"></i></span> </h6>
                                 <select class="js-example-basic-single" name="payment_method_id" id="payment_method_id" required>
                                     <option value="" selected disabled>Select Payment</option>
                                     @foreach($payment_master as $payment)
@@ -120,6 +122,27 @@
 @endsection
 @section('script')
     <script>
+        function add_income(){
+            $('#edit_modal').modal('show');
+            var url = "{{route('account_master.edit_modal',":id")}}";
+            url = url.replace(':id',0);
+            $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
+            $.get(url, {modal_from:'Income'},function(data){
+                $('#ajax_html').html(data);
+            });
+        }
+
+        function add_payment(){
+            $('#edit_modal').modal('show');
+            var url = "{{route('payment_master.edit_modal',":id")}}";
+            url = url.replace(':id',0);
+            $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
+            $.get(url, {modal_from:'Payment'},function(data){
+                $('#ajax_html').html(data);
+            });
+        }
+
+
         $(document).ready(function(){
             get_datatable();
             $("#name").focus();
@@ -168,14 +191,20 @@
                 success: function(data){
                     if(data.result == 1){
                         $.notify({ title:'Success', message:data.message }, { type:'success', });
-                        var page = Number($(".pages").find('span[aria-current="page"] span').text());
-                        $('#income_id').prop('selectedIndex', 0);
-                        $('#payment_method_id').prop('selectedIndex', 0);
-                        $('#remarks').val('');
-                        $('#amount').val('');
-                        $('form button[type="submit"]').html('Save');
-                        $('form button[type="submit"]').removeClass('disabled');
-                        get_datatable(page);
+                        if(form_data.get('account_master_id') == 0){
+                            $('#income_id').append(
+                                `<option value="${data.id}">${data.name}</option>`
+                            ).trigger('change');
+                        }else{
+                            var page = Number($(".pages").find('span[aria-current="page"] span').text());
+                            $('#income_id').prop('selectedIndex', 0);
+                            $('#payment_method_id').prop('selectedIndex', 0);
+                            $('#remarks').val('');
+                            $('#amount').val('');
+                            $('form button[type="submit"]').html('Save');
+                            $('form button[type="submit"]').removeClass('disabled');
+                            get_datatable(page);
+                        }
                         $('#edit_modal').modal('hide');
                     }else{
                         $.notify({ title:'Error', message:data.message }, { type:'danger', });

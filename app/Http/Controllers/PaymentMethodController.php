@@ -61,6 +61,8 @@ class PaymentMethodController extends Controller
                 $payment_master->save();
                 $data = [
                     'result' => 1,
+                    'name' => $payment_master->name,
+                    'id' => $payment_master->id,
                     'message' => 'Payment Master Updated Successfully'
                 ];
             }
@@ -78,6 +80,8 @@ class PaymentMethodController extends Controller
                 $payment_master->save();
                 $data = [
                     'result' => 1,
+                    'name' => $payment_master->name,
+                    'id' => $payment_master->id,
                     'message' => 'Payment Master Added Successfully'
                 ];
             }
