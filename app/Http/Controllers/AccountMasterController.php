@@ -181,4 +181,12 @@ class AccountMasterController extends Controller
         $customer = AccountMaster::where('status',1)->where('from','Customer')->get();
         return view('admin.account_master.customer_list',compact('customer'));
     }
+    public function expense_list(){
+        $expense = AccountMaster::where('status',1)->where('from','Expense')->get();
+        return view('admin.account_master.expense_list',compact('expense'));
+    }
+    public function income_list(){
+        $income = AccountMaster::where('status',1)->where('from','Income')->get();
+        return view('admin.account_master.income_list',compact('income'));
+    }
 }

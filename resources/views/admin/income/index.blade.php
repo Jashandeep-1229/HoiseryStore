@@ -21,6 +21,7 @@
                         <input type="hidden" name="id" value=0>
                         <div class="card-body row">
                             <div class="col-md-2">
+                                <h6>Date</h6>
                                 <input type="date" name="date" id="date" autofocus  class="form-control" value="{{date('Y-m-d')}}" required>
                             </div>
                             <div class="col-md-3">
@@ -42,10 +43,12 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
+                                <h6>Amount</h6>
                                 <input type="number" step="any" placeholder="Enter Amt" name="amount" id="amount" class="form-control">
                             </div>
                            
                             <div class="col-md-6 mt-3">
+                                <h6>Remarks</h6>
                                 <input type="text" placeholder="Remarks" name="remarks" id="remarks" class="form-control">
                             </div>
                            
@@ -177,6 +180,24 @@
             });
         }
 
+        function get_payment_list(){
+            $.get('{{ route("payment_master.list") }}', function(data) {
+                $('#payment_method_id').html(data);
+                $('#payment_method_id').select2({
+                    disabled: false
+                });
+            });
+        }
+
+        function get_income_list(){
+            $.get('{{ route("income.list") }}', function(data) {
+                $('#income_id').html(data);
+                $('#income_id').select2({
+                    disabled: false
+                });
+            });
+        }
+
         $(document).on('submit','form',function(event){
             event.preventDefault();
             var form = event.target;
@@ -191,20 +212,16 @@
                 success: function(data){
                     if(data.result == 1){
                         $.notify({ title:'Success', message:data.message }, { type:'success', });
-                        if(form_data.get('account_master_id') == 0){
-                            $('#income_id').append(
-                                `<option value="${data.id}">${data.name}</option>`
-                            ).trigger('change');
-                        }else{
-                            var page = Number($(".pages").find('span[aria-current="page"] span').text());
-                            $('#income_id').prop('selectedIndex', 0);
-                            $('#payment_method_id').prop('selectedIndex', 0);
-                            $('#remarks').val('');
-                            $('#amount').val('');
-                            $('form button[type="submit"]').html('Save');
-                            $('form button[type="submit"]').removeClass('disabled');
-                            get_datatable(page);
-                        }
+                        var page = Number($(".pages").find('span[aria-current="page"] span').text());
+                        $('#income_id').prop('selectedIndex', 0);
+                        $('#payment_method_id').prop('selectedIndex', 0);
+                        $('#remarks').val('');
+                        $('#amount').val('');
+                        $('form button[type="submit"]').html('Save');
+                        $('form button[type="submit"]').removeClass('disabled');
+                        get_datatable(page);
+                        get_income_list();
+                        get_payment_list();
                         $('#edit_modal').modal('hide');
                     }else{
                         $.notify({ title:'Error', message:data.message }, { type:'danger', });
