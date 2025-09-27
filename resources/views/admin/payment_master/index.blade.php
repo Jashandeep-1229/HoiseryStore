@@ -121,17 +121,11 @@
                 success: function(data){
                     if(data.result == 1){
                         $.notify({ title:'Success', message:data.message }, { type:'success', });
-                        if(form_data.get('account_master_id') == 0){
-                            $('#payment_method_id').append(
-                                `<option value="${data.id}">${data.name}</option>`
-                            ).trigger('change');
-                        }else{
-                            var page = Number($(".pages").find('span[aria-current="page"] span').text());
-                            $('#name').val('');
-                            $('form button[type="submit"]').html('Save');
-                            $('form button[type="submit"]').removeClass('disabled');
-                            get_datatable(page);
-                        }
+                        var page = Number($(".pages").find('span[aria-current="page"] span').text());
+                        $('#name').val('');
+                        $('form button[type="submit"]').html('Save');
+                        $('form button[type="submit"]').removeClass('disabled');
+                        get_datatable(page);
                         $('#edit_modal').modal('hide');
                     }else{
                         $.notify({ title:'Error', message:data.message }, { type:'danger', });

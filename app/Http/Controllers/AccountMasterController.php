@@ -50,56 +50,38 @@ class AccountMasterController extends Controller
     {
         $account_master = AccountMaster::find($request->account_master_id);
         if($account_master){
-            $checkName = AccountMaster::where('name',$request->name)->where('id','!=',$account_master->id)->first();
-            $checkPhone = AccountMaster::where('phone_no',$request->phone_no)->where('id','!=',$account_master->id)->first();
-            if($checkName){
+            $check = AccountMaster::where('name',$request->name)->where('id','!=',$account_master->id)->first();
+            if($check){
                 $data = [
                     'result' => -1,
                     'message' => 'Account Master Name Already Used'
-                ];
-            }elseif($checkPhone && $request->phone_no){
-                $data = [
-                    'result' => -1,
-                    'message' => 'Phone Number Already Used'
                 ];
             }else{
                 $account_master->name = $request->name;
                 $account_master->phone_no = $request->phone_no;
-                $account_master->business_name = $request->business_name;
                 $account_master->from = $request->from;
                 $account_master->save();
                 $data = [
                     'result' => 1,
-                    'id' => $account_master->id,
-                    'name' => $account_master->name,
                     'message' => 'Account Master Updated Successfully'
                 ];
             }
         }else{
-            $checkName = AccountMaster::where('name',$request->name)->first();
-            $checkPhone = AccountMaster::where('phone_no',$request->phone_no)->first();
-            if($checkName){
+            $check = AccountMaster::where('name',$request->name)->first();
+            if($check){
                 $data = [
                     'result' => -1,
                     'message' => 'Account Master Name Already Used'
-                ];
-            }elseif($checkPhone && $request->phone_no){
-                $data = [
-                    'result' => -1,
-                    'message' => 'Phone Number Already Used'
                 ];
             }else{
                 $account_master = new AccountMaster();
                 $account_master->name = $request->name;
                 $account_master->phone_no = $request->phone_no;
-                $account_master->business_name = $request->business_name;
                 $account_master->from = $request->from ?? 'Vendor';
                 $account_master->status = 1;
                 $account_master->save();
                 $data = [
                     'result' => 1,
-                    'id' => $account_master->id,
-                    'name' => $account_master->name,
                     'message' => 'Account Master Added Successfully'
                 ];
             }
@@ -180,13 +162,5 @@ class AccountMasterController extends Controller
     public function customer_list(){
         $customer = AccountMaster::where('status',1)->where('from','Customer')->get();
         return view('admin.account_master.customer_list',compact('customer'));
-    }
-    public function expense_list(){
-        $expense = AccountMaster::where('status',1)->where('from','Expense')->get();
-        return view('admin.account_master.expense_list',compact('expense'));
-    }
-    public function income_list(){
-        $income = AccountMaster::where('status',1)->where('from','Income')->get();
-        return view('admin.account_master.income_list',compact('income'));
     }
 }

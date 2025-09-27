@@ -191,7 +191,7 @@ class SaleOrderController extends Controller
         $pdf->getDomPDF()->set_option('defaultFont', 'Arial Unicode MS');
         $pdf->getDomPDF()->set_option('fontCache', public_path('font_cache'));
         
-        $pdf->getDomPDF()->setPaper([0, 0, 260, 600], 'portrait', 'mm');
+        $pdf->getDomPDF()->setPaper([0, 0, 204, 500], 'portrait', 'mm');
         return $pdf->stream($sale->sale_no.'.pdf');
     }
 

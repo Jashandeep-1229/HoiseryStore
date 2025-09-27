@@ -38,6 +38,8 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('website-setting/insert', [WebsiteController::class, 'insert'])->name('website.setting.insert');
 
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('dashboard/datatable', [DashboardController::class, 'datatable'])->name('dashboard.datatable');
+        Route::get('dashboard/get_wdiget', [DashboardController::class, 'get_wdiget'])->name('dashboard.widget');
 
         Route::resource('category', CategoryController::class);
         Route::get('categories/datatable', [CategoryController::class, 'datatable'])->name('category.datatable');
@@ -91,15 +93,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('account_masters/change_status/{id}',[AccountMasterController::class,'change_status'])->name('account_master.change_status');
         Route::get('vendor/list',[AccountMasterController::class,'vendor_list'])->name('vendor.list');
         Route::get('customer/list',[AccountMasterController::class,'customer_list'])->name('customer.list');
-        Route::get('income/list',[AccountMasterController::class,'income_list'])->name('income.list');
-        Route::get('expense/list',[AccountMasterController::class,'expense_list'])->name('expense.list');
 
         Route::resource('payment_master',PaymentMethodController::class);
         Route::get('payment_masters/datatable',[PaymentMethodController::class,'datatable'])->name('payment_master.datatable');
         Route::get('payment_masters/edit_modal/{id}',[PaymentMethodController::class,'edit_modal'])->name('payment_master.edit_modal');
         Route::get('payment_masters/delete/{id}',[PaymentMethodController::class,'delete'])->name('payment_master.delete');
         Route::get('payment_masters/change_status/{id}',[PaymentMethodController::class,'change_status'])->name('payment_master.change_status');
-        Route::get('payment_masters/list',[PaymentMethodController::class,'payment_list'])->name('payment_master.list');
 
         Route::resource('ledger',LedgerController::class);
         Route::get('ledgers/datatable',[LedgerController::class,'datatable'])->name('ledger.datatable');

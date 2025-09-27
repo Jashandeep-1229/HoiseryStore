@@ -313,7 +313,7 @@ class LedgerController extends Controller
         // --- Paginated OUT records (sales) with profit per row ---
         $manage_stock = $query->clone()
         ->where('in_out', 'OUT')
-        ->where('from', 'Sale')
+        ->whereIn('from', ['Manual','Sale'])
         ->paginate($request->value ?? 50);
 
         $manage_stock->getCollection()->transform(function ($stock) {
@@ -335,7 +335,7 @@ class LedgerController extends Controller
     // Total Profit
     $total_profit = $query->clone()
         ->where('in_out', 'OUT')
-        ->where('from', 'Sale')
+        ->whereIn('from', ['Manual','Sale'])
         ->get()
         ->sum(function ($stock) {
             $selling_price  = $stock->selling_price ?? $stock->item_detail->selling_price;
@@ -365,7 +365,7 @@ class LedgerController extends Controller
     // Total Sale (all OUT entries)
     $total_sale = $query->clone()
         ->where('in_out', 'OUT')
-        ->where('from', 'Sale')
+        ->whereIn('from', ['Manual','Sale'])
         ->get()
         ->sum(function ($stock) {
             $selling_price = $stock->selling_price ?? $stock->item_detail->selling_price;

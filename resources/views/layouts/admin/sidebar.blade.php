@@ -29,17 +29,17 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('brand.index') ? 'active' : ''}}" href="{{ route('brand.index') }}">
-              <i data-feather="home"></i><span>Brand</span>
+              <i data-feather="bold"></i><span>Brand</span>
             </a>
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('category.index') ? 'active' : ''}}" href="{{ route('category.index') }}">
-              <i data-feather="home"></i><span>Category</span>
+              <i data-feather="code"></i><span>Category</span>
             </a>
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('season.index') ? 'active' : ''}}" href="{{ route('season.index') }}">
-              <i data-feather="home"></i><span>Season</span>
+              <i data-feather="cloud"></i><span>Season</span>
             </a>
           </li>
          
@@ -50,7 +50,7 @@
           </li> --}}
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
-              <i data-feather="package"></i><span>Manage Article</span>
+              <i data-feather="layers"></i><span>Manage Article</span>
             </a>
             <ul class="sidebar-submenu">
               <li><a href="{{ route('item.create') }}">Add Article</a></li>
@@ -59,12 +59,12 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('barcode.print.index') ? 'active' : ''}}" href="{{ route('barcode.print.index') }}">
-              <i data-feather="home"></i><span>Barcode</span>
+              <i data-feather="film"></i><span>Barcode</span>
             </a>
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
-              <i data-feather="package"></i><span>Manage Stock</span>
+              <i data-feather="archive"></i><span>Manage Stock</span>
             </a>
             <ul class="sidebar-submenu">
               <li><a href="{{route('manage_stock.index','title=in')}}">Stock In </a></li>
@@ -80,7 +80,7 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
-              <i data-feather="package"></i><span>Manage Purchase</span>
+              <i data-feather="file-plus"></i><span>Manage Purchase</span>
               <label class="badge badge-light-danger">*</label>
             </a>
             <ul class="sidebar-submenu">
@@ -97,7 +97,7 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
-              <i data-feather="package"></i><span>Manage Sale</span>
+              <i data-feather="folder-minus"></i><span>Manage Sale</span>
               <label class="badge badge-light-danger">*</label>
             </a>
             <ul class="sidebar-submenu">
@@ -114,12 +114,12 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('expense.index') ? 'active' : ''}}" href="{{ route('expense.index') }}">
-              <i data-feather="home"></i><span>Manage Expense</span>
+              <i data-feather="minus-circle"></i><span>Manage Expense</span>
             </a>
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('income.index') ? 'active' : ''}}" href="{{ route('income.index') }}">
-              <i data-feather="home"></i><span>Manage Income</span>
+              <i data-feather="plus-circle"></i><span>Manage Income</span>
             </a>
           </li>
         
@@ -130,7 +130,7 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
-              <i data-feather="package"></i><span>Manage Master</span>
+              <i data-feather="book"></i><span>Manage Master</span>
               <label class="badge badge-light-danger">*</label>
             </a>
             <ul class="sidebar-submenu">
@@ -149,17 +149,17 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('transaction.report') ? 'active' : ''}}" href="{{ route('transaction.report') }}">
-              <i data-feather="home"></i><span>Transaction Report</span>
+              <i data-feather="clipboard"></i><span>Transaction Report</span>
             </a>
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('stock.report') ? 'active' : ''}}" href="{{ route('stock.report') }}">
-              <i data-feather="home"></i><span>Stock Report</span>
+              <i data-feather="database"></i><span>Stock Report</span>
             </a>
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('profit.report') ? 'active' : ''}}" href="{{ route('profit.report') }}">
-              <i data-feather="home"></i><span>Profit & Loss Report</span>
+              <i data-feather="dollar-sign"></i><span>Profit & Loss Report</span>
             </a>
           </li>
           <li class="sidebar-main-title">
@@ -169,18 +169,9 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('website.setting') ? 'active' : ''}}" href="{{ route('website.setting') }}">
-              <i data-feather="home"></i><span>Website Setting</span>
+              <i data-feather="settings"></i><span>Website Setting</span>
             </a>
           </li>
-          {{-- <li class="sidebar-list">
-            <a class="sidebar-link sidebar-title" href="#">
-              <i data-feather="package"></i><span>Manage Employees</span>
-            </a>
-            <ul class="sidebar-submenu">
-              <li><a href="{{ route('employee.add') }}">Add Employee</a></li>
-              <li><a href="{{ route('employee.index') }}">All Employees</a></li>
-            </ul>
-          </li> --}}
         </ul>
       </div>
       <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>

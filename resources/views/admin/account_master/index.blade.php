@@ -34,14 +34,6 @@
                                     <option value="Income">Income</option>
                                 </select>
                             </div>
-                                <!-- Dynamic Fields Start -->
-                                <div class="col-md-3 d-none" id="business_name_div">
-                                    <input type="text" name="business_name" id="business_name" placeholder="Business Name" class="form-control">
-                                </div>
-                                <div class="col-md-2 d-none" id="phone_no_div">
-                                    <input type="text" name="phone_no" id="phone_no" placeholder="Phone Number" class="form-control">
-                                </div>
-                                <!-- Dynamic Fields End -->
                            
                             <div class="col-md-2">
                                <button type="submit" id="add_data" class="btn btn-primary w-100" >Add +</button>
@@ -98,22 +90,6 @@
         $(document).ready(function(){
             get_datatable();
             $("#name").focus();
-            // Show/hide fields based on 'from' selection
-            $('#from').on('change', function() {
-                var val = $(this).val();
-                if(val === 'Vendor' || val === 'Customer') {
-                    $('#business_name_div').removeClass('d-none');
-                    $('#phone_no_div').removeClass('d-none');
-                } else {
-                    $('#business_name_div').addClass('d-none');
-                    $('#phone_no_div').addClass('d-none');
-                }
-            });
-            // Reset fields on form reset
-            $('form').on('reset', function() {
-                $('#business_name_div').addClass('d-none');
-                $('#phone_no_div').addClass('d-none');
-            });
         });
 
         $(document).on('click','.pages a',function(n){
@@ -159,9 +135,8 @@
                         $.notify({ title:'Success', message:data.message }, { type:'success', });
                         var page = Number($(".pages").find('span[aria-current="page"] span').text());
                         $('#name').val('');
-                        $('#business_name').val('');
                         $('#phone_no').val('');
-                        $('#from').prop('selectedIndex', 0).trigger('change');
+                        $('#from').prop('selectedIndex', 0);
                         $('form button[type="submit"]').html('Save');
                         $('form button[type="submit"]').removeClass('disabled');
                         get_datatable(page);

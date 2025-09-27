@@ -31,7 +31,7 @@
                             <select class="js-example-basic-single" name="vendor_id" id="vendor_id" required>
                                 <option value="0" selected disabled>Select Vendor...</option>
                                 @foreach($vendors as $item)
-                                <option value="{{ $item->id }}" {{ ($purchase->vendor_id ?? '') == $item->id ? 'selected':'' }}>{{ $item->name }} ({{ $item->phone_no }})</option>
+                                <option value="{{ $item->id }}" {{ ($purchase->vendor_id ?? '') == $item->id ? 'selected':'' }}>{{ $item->name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -243,27 +243,27 @@
     }
     $('#edit_modal').on('submit','form', function (event) {
         event.preventDefault();
-        var url = $(this).attr('action');
-        var formData = $(this).serialize();
-        $.ajax({
-            type: 'POST',
-            url: url,
-            data: formData,
-            success: function (response) {
-                if(response.result == 1){
-                    $('#edit_modal').modal('hide');
+            var url = $(this).attr('action');
+            var formData = $(this).serialize();
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                success: function (response) {
+                   if(response.result == 1){
+                       $('#edit_modal').modal('hide');
+                       $('form button[type="submit"]').html('Add ');
+                       $('form button[type="submit"]').removeClass('disabled');
+                       $.notify({ title:'Success', message:'Vendor Added Successfully' }, { type:'success', });
+                       get_vendor_list();
+                   }
+                   else{
+                    $.notify({ title:'Error', message:response.message }, { type:'danger', });
                     $('form button[type="submit"]').html('Add ');
                     $('form button[type="submit"]').removeClass('disabled');
-                    $.notify({ title:'Success', message:'Vendor Added Successfully' }, { type:'success', });
-                    get_vendor_list();
-                }
-                else{
-                $.notify({ title:'Error', message:response.message }, { type:'danger', });
-                $('form button[type="submit"]').html('Add ');
-                $('form button[type="submit"]').removeClass('disabled');
-                }
-            },
-        });
+                   }
+                },
+            });
     })
     function get_vendor_list(){
         $.get('{{ route("vendor.list") }}', function(data) {

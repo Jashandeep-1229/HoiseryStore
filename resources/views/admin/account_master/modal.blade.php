@@ -11,17 +11,10 @@
                 <h6>Name</h6>
                 <input type="text" name="name" value="{{$account_master->name ?? ''}}" oninput="this.value = this.value.toUpperCase()" class="form-control" required>
             </div>
-            @if(($account_master->from ?? '') == 'Vendor' || ($account_master->from ?? '') == 'Customer' || request()->modal_from == 'Vendor' || request()->modal_from == 'Customer')
-            <div class="col-md-12 form-group mb-3">
-                <h6>Business Name</h6>
-                <input type="text" name="business_name" value="{{$account_master->business_name ?? ''}}" oninput="this.value = this.value.toUpperCase()" class="form-control" >
-            </div>
-            <div class="col-md-12 form-group mb-3">
+            {{-- <div class="col-md-12 form-group mb-3">
                 <h6>Phone No</h6>
-                <input type="text" name="phone_no" value="{{$account_master->phone_no ?? ''}}" class="form-control" >
-            </div>
-            @endif
-            
+                <input type="text" name="phone_no" value="{{$account_master->phone_no ?? ''}}" class="form-control" required>
+            </div> --}}
             @if($account_master->is_editable ?? 0)
             <div class="col-md-12 form-group mb-3">
                 <h6>From</h6>
@@ -33,7 +26,6 @@
                 </select>
             </div>
             @endif
-
             @if((request()->modal_from ?? 0) != 0)
             <input type="hidden" name="from" value="{{request()->modal_from}}">
             @endif
