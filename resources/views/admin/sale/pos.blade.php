@@ -33,7 +33,7 @@ footer {
     </footer>
     
  <div id="watermark" style="position: fixed;  left:50%; top:50%;  transform:translate(-50%,-50%); !important;z-index:-100000000;">
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('ak_logo.png'))) }}" width="320px;" style="opacity:0.2">
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('ak_logo.png'))) }}" width="320px;" style="opacity:0.15">
       </div>
       <table style="width: 100%;table-layout: fixed;">
           <tbody> 
@@ -56,9 +56,9 @@ footer {
           
           <tr style="text-align:center">
             <td style="font-size:12px; font-family: 'DejaVu Sans', sans-serif;">
-                <b>☎  +91 97790-04200</b><br>
-                <b>☎  +91 98764-43000</b><br>
-                <b>☎  Clock Tower, Shoe Market, Hotel Heritage Ludhiana</b><br>
+                <b><img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('2.png'))) }}" width="12px;">  +91 97790-04200</b><br>
+                <b><img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('3.png'))) }}" width="12px;">  +91 98764-43000</b><br>
+                <b><img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('4.png'))) }}" width="12px;"> Clock Tower, Shoe Market, Hotel Heritage Ludhiana</b><br>
              </td>
           </tr>
          

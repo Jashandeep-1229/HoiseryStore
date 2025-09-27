@@ -215,6 +215,19 @@
             alert('Please enter article no');
             return false;
         }
+        let exists = false;
+        $('#get_data_list tr.item_article_row').each(function(){
+            let existing = $(this).find('input[name*="[article_name]"]').val();
+            if(existing && existing.trim().toLowerCase() === article_no.trim().toLowerCase()){
+                exists = true;
+                return false; // break loop
+            }
+        });
+
+        if(exists){
+            alert('Article already added!');
+            return false;
+        }
         var item_id = $('#item_id').val() || 0;
         var brand_id = $('#brand_id').val() || 0;
         var category_id = $('#category_id').val() || 0;

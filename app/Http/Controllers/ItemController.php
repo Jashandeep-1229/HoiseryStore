@@ -57,7 +57,7 @@ class ItemController extends Controller
         if($request->brand_id == 0 || $request->category_id == 0){
             return -2;
         }
-        $check_article = ItemDetail::where('article_name',$request->article_name)->first();
+        $check_article = Item::where('article_name',$request->article_name)->where('is_temp',0)->first();
         if($check_article){
             return -1;
         }
