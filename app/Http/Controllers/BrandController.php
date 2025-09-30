@@ -30,6 +30,12 @@ class BrandController extends Controller
         return view('admin.brand.modal',compact('brand'));
     }
 
+    public function brand_list(Request $request)
+    {
+        $brand = Brand::all();
+        return view('admin.brand.brand_list',compact('brand'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -54,14 +60,16 @@ class BrandController extends Controller
             if($check){
                 $data = [
                     'result' => -1,
-                    'message' => 'Brand Name Already Used'
+                    'message' => 'Brand Name Already Used',
+                    'from' => 'Brand'
                 ];
             }else{
                 $brand->name = $request->name;
                 $brand->save();
                 $data = [
                     'result' => 1,
-                    'message' => 'Brand Updated Successfully'
+                    'message' => 'Brand Updated Successfully',
+                    'from' => 'Brand'
                 ];
             }
         }else{
@@ -69,7 +77,8 @@ class BrandController extends Controller
             if($check){
                 $data = [
                     'result' => -1,
-                    'message' => 'Brand Name Already Used'
+                    'message' => 'Brand Name Already Used',
+                    'from' => 'Brand'
                 ];
             }else{
                 $brand = new Brand();
@@ -79,7 +88,8 @@ class BrandController extends Controller
                 $brand->save();
                 $data = [
                     'result' => 1,
-                    'message' => 'Brand Added Successfully'
+                    'message' => 'Brand Added Successfully',
+                    'from' => 'Brand'
                 ];
             }
         }

@@ -19,14 +19,14 @@
                    {{$list->name ?? ''}}
                 </td>
                 <td>
-                    {{$list->total_cr ?? ''}}
+                    {{formatIndianNumber($list->total_cr) ?? ''}}
                 </td>
                 <td>
-                    {{$list->total_dr ?? ''}}
+                    {{formatIndianNumber($list->total_dr) ?? ''}}
                 </td>
                 
                 <td>
-                    {{$list->remaining ?? ''}}
+                    {{formatIndianNumber($list->remaining) ?? ''}}
                 </td>
                
                 <td>

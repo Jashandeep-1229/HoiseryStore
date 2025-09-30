@@ -9,11 +9,11 @@
         <small>{{$item_detail->size ?? ''}}</small>
     </td>
     <!-- first detail row -->
-    <td> <input type="text" name="add[{{request()->key}}][purchase_price]" value="{{request()->purchase_price}}" class="form-control form-control-sm"> </td>
-    <td> <input type="text" name="add[{{request()->key}}][selling_price]" value="{{request()->selling_price}}" class="form-control form-control-sm"> </td>
-    <td> <input type="text" name="add[{{request()->key}}][quantity]" value="{{request()->quantity}}" oninput="recalculate_totals({{ $item_detail->id }})" class="form-control form-control-sm"> </td>
+    <td> <input type="number" step="any" oninput="recalculate_totals({{ $item_detail->id }})" name="add[{{request()->key}}][purchase_price]" value="{{request()->purchase_price}}" class="form-control form-control-sm"> </td>
+    <td> <input type="number" step="any" name="add[{{request()->key}}][selling_price]" value="{{request()->selling_price}}" class="form-control form-control-sm"> </td>
+    <td> <input type="number" step="any" name="add[{{request()->key}}][quantity]" value="{{request()->quantity}}" oninput="recalculate_totals({{ $item_detail->id }})" class="form-control form-control-sm"> </td>
     <td> 
-        <input type="text" name="add[{{request()->key}}][opening_stock]" value="{{request()->opening_stock}}"  oninput="recalculate_totals({{ $item_detail->id }})" class="form-control form-control-sm"> 
+        <input type="number" step="any" name="add[{{request()->key}}][opening_stock]" value="{{request()->opening_stock}}"  oninput="recalculate_totals({{ $item_detail->id }})" class="form-control form-control-sm"> 
         <span class="f-12"> Bundle: <span class="mutha_text">@if(request()->quantity > 0){{ round(request()->opening_stock / request()->quantity, 2)}}@else{{0}}@endif</span></span>
         <input type="hidden" name="add[{{request()->key}}][mutha]"  value="@if(request()->quantity > 0){{ round(request()->opening_stock / request()->quantity, 2)}}@else{{0}}@endif" class="mutha_input">
     </td>

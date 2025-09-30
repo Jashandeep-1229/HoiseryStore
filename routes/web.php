@@ -46,6 +46,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('categories/edit_modal/{id}', [CategoryController::class, 'edit_modal'])->name('category.edit_modal');
         Route::get('categories/delete/{id}', [CategoryController::class, 'delete'])->name('category.delete');
         Route::get('categories/change_status/{id}', [CategoryController::class, 'change_status'])->name('category.change_status');
+        Route::get('categories/list/', [CategoryController::class, 'category_list'])->name('category.list');
 
         Route::resource('season', SeasonController::class);
         Route::get('seasons/datatable', [SeasonController::class, 'datatable'])->name('season.datatable');
@@ -58,6 +59,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('brands/edit_modal/{id}', [BrandController::class, 'edit_modal'])->name('brand.edit_modal');
         Route::get('brands/delete/{id}', [BrandController::class, 'delete'])->name('brand.delete');
         Route::get('brands/change_status/{id}', [BrandController::class, 'change_status'])->name('brand.change_status');
+        Route::get('brands/list/', [BrandController::class, 'brand_list'])->name('brand.list');
 
         Route::resource('item',ItemController::class);
         Route::get('items/datatable', [ItemController::class, 'datatable'])->name('item.datatable');

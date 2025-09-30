@@ -23,14 +23,14 @@
                 </td>
                 <td>
                     @if($item->dr_cr == 'Cr')
-                    {{$item->amount ?? ''}}
+                    {{formatIndianNumber($item->amount) ?? ''}}
                     @else
                     -
                     @endif
                 </td>
                 <td>
                     @if($item->dr_cr == 'Dr')
-                    {{$item->amount ?? ''}}
+                    {{formatIndianNumber($item->amount) ?? ''}}
                     @else
                     -
                     @endif
@@ -48,7 +48,7 @@
                         $item->dr_cr == 'Dr' ? $balance += $item->amount : $balance -= $item->amount;
                     }
                     @endphp
-                    {{$balance ?? 0}}
+                    {{formatIndianNumber($balance) ?? 0}}
                 </td>
                <td>
                 @if($item->remarks)

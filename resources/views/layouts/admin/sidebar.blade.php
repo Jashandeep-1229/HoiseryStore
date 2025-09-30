@@ -122,6 +122,25 @@
               <i data-feather="plus-circle"></i><span>Manage Income</span>
             </a>
           </li>
+          <li class="sidebar-main-title">
+            <div>
+              <h6>Vendor / Customer</h6>
+            </div>
+          </li>
+          <li class="sidebar-list">
+            <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('ledger.index') && request('from') === 'Vendor' ? 'active' : '' }}"
+               href="{{ route('ledger.index', ['from' => 'Vendor']) }}">
+                <i data-feather="minus-circle"></i><span>Manage Vendor</span>
+            </a>
+        </li>
+        
+        <li class="sidebar-list">
+            <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('ledger.index') && request('from') === 'Customer' ? 'active' : '' }}"
+               href="{{ route('ledger.index', ['from' => 'Customer']) }}">
+                <i data-feather="plus-circle"></i><span>Manage Customer</span>
+            </a>
+        </li>
+        
         
           <li class="sidebar-main-title">
             <div>
@@ -138,8 +157,8 @@
               <li><a href="{{route('payment_master.index')}}">Payment Master </a></li>
               {{-- <li><a href="{{route('ledger.index','from=expense')}}">Expense</a></li>
               <li><a href="{{route('ledger.index','from=income')}}">Income</a></li> --}}
-              <li><a href="{{route('ledger.index','from=Vendor')}}">Vendor</a></li>
-              <li><a href="{{route('ledger.index','from=Customer')}}">Customer</a></li>
+              {{-- <li><a href="{{route('ledger.index','from=Vendor')}}">Vendor</a></li>
+              <li><a href="{{route('ledger.index','from=Customer')}}">Customer</a></li> --}}
             </ul>
           </li>
           <li class="sidebar-main-title">

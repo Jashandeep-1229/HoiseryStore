@@ -21,7 +21,7 @@
             <td>{{$item->brand_name ?? ''}} <small>({{$item->category_name ?? ''}})</small></td>
             <td>{{$item->article_name ?? ''}} {{$item->size ?? ''}}</td>
           
-            <td><b>{{$item->total_out}}</b></td>
+            <td><b>{{formatIndianNumber($item->total_out)}}</b></td>
            <td>
                 <a  href="#" class="btn btn-sm btn-info p-1"><i class="fa fa-eye"></i></a>
             </td>

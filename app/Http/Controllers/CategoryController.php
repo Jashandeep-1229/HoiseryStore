@@ -37,14 +37,16 @@ class CategoryController extends Controller
             if($check){
                 $data = [
                     'result' => -1,
-                    'message' => 'Category Name Already Used'
+                    'message' => 'Category Name Already Used',
+                    'from' => 'Category',
                 ];
             }else{
                 $category->name = $request->name;
                 $category->save();
                 $data = [
                     'result' => 1,
-                    'message' => 'Category Updated Successfully'
+                    'message' => 'Category Updated Successfully',
+                    'from' => 'Category',
                 ];
             }
         }else{
@@ -52,7 +54,8 @@ class CategoryController extends Controller
             if($check){
                 $data = [
                     'result' => -1,
-                    'message' => 'Category Name Already Used'
+                    'message' => 'Category Name Already Used',
+                    'from' => 'Category',
                 ];
             }else{
                 $category = new Category();
@@ -62,11 +65,17 @@ class CategoryController extends Controller
                 $category->save();
                 $data = [
                     'result' => 1,
-                    'message' => 'Category Added Successfully'
+                    'message' => 'Category Added Successfully',
+                    'from' => 'Category',
                 ];
             }
         }
         return $data;
+    }
+    public function category_list(Request $request)
+    {
+        $category = Category::all();
+        return view('admin.category.category_list',compact('category'));
     }
 
     public function change_status($id){

@@ -22,7 +22,7 @@
                     <div class="card-body row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <h6>Select Brand<span>*</span></h6>
+                                <h6>Select Brand<span>*</span> <span class="badge badge-success text-white p-1" onclick="add_brand()"><i class="fa fa-plus"></i></span></h6>
                                 <select class="form-control js-example-basic-single mb-2"  name="brand_id" id="brand_id" required>
                                     <option selected disabled value="">Select brand</option>
                                     @foreach($brand as $br)
@@ -33,7 +33,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <h6>Select Category<span>*</span></h6>
+                                <h6>Select Category<span>*</span> <span class="badge badge-success text-white p-1" onclick="add_category()"><i class="fa fa-plus"></i></span></h6>
                                 <select class="form-control js-example-basic-single mb-2"  name="category_id" id="category_id" required>
                                     <option selected disabled value="">Select Category</option>
                                     @foreach($category as $cat)
@@ -207,9 +207,75 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="edit_modal" tabindex="-1" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog" id="ajax_html">
+        
+    </div>
+</div>
 @endsection
 @section('script')
 <script>
+    function add_brand(){
+        $('#edit_modal').modal('show');
+        var url = "{{route('brand.edit_modal',":id")}}";
+        url = url.replace(':id',0);
+        $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
+        $.get(url, {},function(data){
+            $('#ajax_html').html(data);
+        });
+    }
+    function add_category(){
+        $('#edit_modal').modal('show');
+        var url = "{{route('category.edit_modal',":id")}}";
+        url = url.replace(':id',0);
+        $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
+        $.get(url, {},function(data){
+            $('#ajax_html').html(data);
+        });
+    }
+    $('#edit_modal').on('submit','form', function (event) {
+        event.preventDefault();
+            var url = $(this).attr('action');
+            var formData = $(this).serialize();
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                success: function (response) {
+                   if(response.result == 1){
+                       $('#edit_modal').modal('hide');
+                       if(response.from == 'Brand'){
+                            brand_list();
+                       }
+                       else{
+                        category_list();
+                       }
+                      
+                       $.notify({ title:'Success', message:response.messafe }, { type:'success', });
+                   }
+                   else{
+                    $.notify({ title:'Error', message:response.message }, { type:'danger', });
+                    
+                   }
+                },
+            });
+    })
+    function brand_list(){
+        $.get('{{ route("brand.list") }}', function(data) {
+            $('#brand_id').html(data);
+            $('#brand_id').select2({
+                disabled: false
+            });
+        });
+    }
+    function category_list(){
+        $.get('{{ route("category.list") }}', function(data) {
+            $('#category_id').html(data);
+            $('#category_id').select2({
+                disabled: false
+            });
+        });
+    }
     function add_article(article_no){
         if(article_no == ''){
             alert('Please enter article no');

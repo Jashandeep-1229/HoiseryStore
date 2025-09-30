@@ -38,7 +38,7 @@
                         <hr>
                         <div class="col-md-3 mt-2">
                             <div class="form-group">
-                                <h6>Select Brand </h6>
+                                <h6>Select Brand <span class="badge badge-success text-white p-1" onclick="add_brand()"><i class="fa fa-plus"></i></span></h6>
                                 <select class="js-example-basic-single" name="selected_brand_id" id="selected_brand_id">
                                     <option value="0" selected disabled>Select Brand...</option>
                                     @foreach($brands as $item)
@@ -49,7 +49,7 @@
                         </div>
                         <div class="col-md-3 mt-2">
                             <div class="form-group">
-                                <h6>Select Category </h6>
+                                <h6>Select Category <span class="badge badge-success text-white p-1" onclick="add_category()"><i class="fa fa-plus"></i></span></h6>
                                 <select class="js-example-basic-single" name="selected_category_id" id="selected_category_id">
                                     <option value="0" selected disabled>Select Category...</option>
                                     @foreach($category as $cat)
@@ -241,6 +241,40 @@
             $('#ajax_html').html(data);
         });
     }
+    function add_brand(){
+        $('#edit_modal').modal('show');
+        var url = "{{route('brand.edit_modal',":id")}}";
+        url = url.replace(':id',0);
+        $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
+        $.get(url, {},function(data){
+            $('#ajax_html').html(data);
+        });
+    }
+    function add_category(){
+        $('#edit_modal').modal('show');
+        var url = "{{route('category.edit_modal',":id")}}";
+        url = url.replace(':id',0);
+        $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
+        $.get(url, {},function(data){
+            $('#ajax_html').html(data);
+        });
+    }
+    function brand_list(){
+        $.get('{{ route("brand.list") }}', function(data) {
+            $('#selected_brand_id').html(data);
+            $('#selected_brand_id').select2({
+                disabled: false
+            });
+        });
+    }
+    function category_list(){
+        $.get('{{ route("category.list") }}', function(data) {
+            $('#selected_category_id').html(data);
+            $('#selected_category_id').select2({
+                disabled: false
+            });
+        });
+    }
     $('#edit_modal').on('submit','form', function (event) {
         event.preventDefault();
             var url = $(this).attr('action');
@@ -251,11 +285,20 @@
                 data: formData,
                 success: function (response) {
                    if(response.result == 1){
+                        if(response.from == 'Brand'){
+                            brand_list();
+                        }
+                        else if(response.from == 'Category'){
+                            category_list();
+                        }
+                        else{
+                            get_vendor_list();
+                        }
                        $('#edit_modal').modal('hide');
                        $('form button[type="submit"]').html('Add ');
                        $('form button[type="submit"]').removeClass('disabled');
                        $.notify({ title:'Success', message:'Vendor Added Successfully' }, { type:'success', });
-                       get_vendor_list();
+                      
                    }
                    else{
                     $.notify({ title:'Error', message:response.message }, { type:'danger', });
@@ -333,7 +376,7 @@
             totalItems += 1;
             totalQuantity += openingStock;
             totalMutha += parseFloat(mutha);
-            totalPurchaseAmount += (quantity * purchasePrice);
+            totalPurchaseAmount += (openingStock * purchasePrice);
         });
 
         totalMutha = totalMutha.toFixed(2);

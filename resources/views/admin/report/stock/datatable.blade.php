@@ -27,7 +27,7 @@
             <td>{{$item->item_detail->brand->name ?? ''}} <small>({{$item->item_detail->category->name ?? ''}})</small></td>
             <td>{{$item->item_detail->article_name}} {{$item->item_detail->size ?? ''}}</td>
           
-            <td><b>{{$item->remaining}}</b></td>
+            <td><b>{{formatIndianNumber($item->remaining)}}</b></td>
             <td>
                 <a  href="{{route('view_statement',$item->item_detail_id)}}" class="btn btn-sm btn-info p-1"><i class="fa fa-eye"></i></a>
             </td>
