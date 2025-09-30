@@ -21,9 +21,11 @@
                         <input type="hidden" name="id" value=0>
                         <div class="card-body row">
                             <div class="col-md-2">
+                                <h6>Date</h6>
                                 <input type="date" name="date" id="date" autofocus  class="form-control" value="{{date('Y-m-d')}}" required>
                             </div>
                             <div class="col-md-3">
+                                <h6>Select Income <span class="badge badge-success text-white p-1" onclick="add_income()"><i class="fa fa-plus"></i></span> </h6>
                                 <select class="js-example-basic-single" name="income_id" id="income_id" required>
                                     <option value="" selected disabled>Select Income</option>
                                     @foreach($account_income as $acc)
@@ -32,6 +34,7 @@
                                 </select>
                             </div>
                             <div class="col-md-3">
+                                <h6>Select Payment <span class="badge badge-success text-white p-1" onclick="add_payment()"><i class="fa fa-plus"></i></span> </h6>
                                 <select class="js-example-basic-single" name="payment_method_id" id="payment_method_id" required>
                                     <option value="" selected disabled>Select Payment</option>
                                     @foreach($payment_master as $payment)
@@ -40,10 +43,12 @@
                                 </select>
                             </div>
                             <div class="col-md-4">
+                                <h6>Amount</h6>
                                 <input type="number" step="any" placeholder="Enter Amt" name="amount" id="amount" class="form-control">
                             </div>
                            
                             <div class="col-md-6 mt-3">
+                                 <h6>Remarks</h6>
                                 <input type="text" placeholder="Remarks" name="remarks" id="remarks" class="form-control">
                             </div>
                            
@@ -120,6 +125,44 @@
 @endsection
 @section('script')
     <script>
+        function add_income(){
+            $('#edit_modal').modal('show');
+            var url = "{{route('account_master.edit_modal',":id")}}";
+            url = url.replace(':id',0);
+            $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
+            $.get(url, {modal_from:'Income'},function(data){
+                $('#ajax_html').html(data);
+            });
+        }
+
+        function add_payment(){
+            $('#edit_modal').modal('show');
+            var url = "{{route('payment_master.edit_modal',":id")}}";
+            url = url.replace(':id',0);
+            $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
+            $.get(url, {modal_from:'Payment'},function(data){
+                $('#ajax_html').html(data);
+            });
+        }
+
+        function get_payment_list(){
+            $.get('{{ route("payment_master.list") }}', function(data) {
+                $('#payment_method_id').html(data);
+                $('#payment_method_id').select2({
+                    disabled: false
+                });
+            });
+        }
+
+        function get_income_list(){
+            $.get('{{ route("income.list") }}', function(data) {
+                $('#income_id').html(data);
+                $('#income_id').select2({
+                    disabled: false
+                });
+            });
+        }
+
         $(document).ready(function(){
             get_datatable();
             $("#name").focus();
@@ -176,6 +219,8 @@
                         $('form button[type="submit"]').html('Save');
                         $('form button[type="submit"]').removeClass('disabled');
                         get_datatable(page);
+                        get_income_list();
+                        get_payment_list();
                         $('#edit_modal').modal('hide');
                     }else{
                         $.notify({ title:'Error', message:data.message }, { type:'danger', });

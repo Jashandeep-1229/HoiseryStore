@@ -150,4 +150,9 @@ class PaymentMethodController extends Controller
         ];
         return $data;
     }
+
+    public function payment_list(){
+        $payments = PaymentMethod::where('status',1)->get();
+        return view('admin.payment_master.payment_list',compact('payments'));
+    }
 }
