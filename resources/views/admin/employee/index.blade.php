@@ -37,6 +37,7 @@
                                 <select name="role_as" id="role_as" class="form-control" required>
                                     <option value="Purchase_Management">Purchase Management</option>
                                     <option value="Order_Management">Order Management</option>
+                                    <option value="Stock_Management">Stock Management</option>
                                 </select>
                             </div>
                             <div class="col-md-2">

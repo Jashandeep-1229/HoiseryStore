@@ -63,6 +63,8 @@
               <i data-feather="film"></i><span>Barcode</span>
             </a>
           </li>
+          @endif
+          @if(auth()->user()->role_as === 'Stock_Management' || auth()->user()->role_as === 'Admin')
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
               <i data-feather="archive"></i><span>Manage Stock</span>
