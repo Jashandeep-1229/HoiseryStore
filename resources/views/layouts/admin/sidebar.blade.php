@@ -139,14 +139,14 @@
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('ledger.index') && request('from') === 'Vendor' ? 'active' : '' }}"
                href="{{ route('ledger.index', ['from' => 'Vendor']) }}">
-                <i data-feather="minus-circle"></i><span>Manage Vendor</span>
+                <i data-feather="minus-circle"></i><span>Vendor Ledger</span>
             </a>
         </li>
         
         <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{ request()->routeIs('ledger.index') && request('from') === 'Customer' ? 'active' : '' }}"
                href="{{ route('ledger.index', ['from' => 'Customer']) }}">
-                <i data-feather="plus-circle"></i><span>Manage Customer</span>
+                <i data-feather="plus-circle"></i><span>Customer Ledger</span>
             </a>
         </li>
         
@@ -177,7 +177,7 @@
           </li>
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('transaction.report') ? 'active' : ''}}" href="{{ route('transaction.report') }}">
-              <i data-feather="clipboard"></i><span>Transaction Report</span>
+              <i data-feather="clipboard"></i><span>Office Transaction Report</span>
             </a>
           </li>
           <li class="sidebar-list">
