@@ -3,18 +3,19 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Admin\WebsiteController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\BrandController;
 use App\Http\Controllers\ItemController;
-use App\Http\Controllers\ManageStockController;
-use App\Http\Controllers\SeasonController;
-use App\Http\Controllers\AccountMasterController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\LedgerController;
+use App\Http\Controllers\SeasonController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SaleOrderController;
+use App\Http\Controllers\ManageStockController;
+use App\Http\Controllers\AccountMasterController;
+use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PurchaseOrderController;
-use App\Http\Controllers\SaleOrderController;
 
 
 /*
@@ -148,7 +149,15 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('profit/report',[LedgerController::class,'profit_index'])->name('profit.report');
         Route::get('profit/report/datatable',[LedgerController::class,'profit_datatable'])->name('profit.report.datatable');
 
-
+        // Employee Routes
+        Route::get('user', [EmployeeController::class, 'index'])->name('user.index');
+        Route::post('user/store', [EmployeeController::class, 'store'])->name('user.store');
+        Route::get('user/datatable', [EmployeeController::class, 'datatable'])->name('user.datatable');
+        Route::get('user/edit_modal/{id}', [EmployeeController::class, 'edit_modal'])->name('user.edit_modal');
+        Route::get('user/delete/{id}', [EmployeeController::class, 'delete'])->name('user.delete');
+        Route::get('user/change_status/{id}', [EmployeeController::class, 'change_status'])->name('user.change_status');
+        Route::get('sub_user/index/{id}',[EmployeeController::class,'sub_user_index'])->name('sub_user.index');
+        Route::get('sub_user/datatable/{id}',[EmployeeController::class,'sub_user_datatable'])->name('sub_user.datatable');
     });
 });
 

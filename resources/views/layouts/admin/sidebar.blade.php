@@ -22,6 +22,7 @@
               <i data-feather="home"></i><span>Dashboard</span>
             </a>
           </li>
+          @if(auth()->user()->role_as === 'Admin')
           <li class="sidebar-main-title">
             <div>
               <h6>Masters</h6>
@@ -73,6 +74,8 @@
               <li><a href="{{route('manage_stock.report','title=all')}}">Stock Alert</a></li>
             </ul>
           </li>
+          @endif
+          @if(auth()->user()->role_as === 'Purchase_Management' || auth()->user()->role_as === 'Admin')
           <li class="sidebar-main-title">
             <div>
               <h6>Purchase Order</h6>
@@ -90,6 +93,8 @@
             
             </ul>
           </li>
+          @endif
+          @if(auth()->user()->role_as === 'Order_Management' || auth()->user()->role_as === 'Admin')
           <li class="sidebar-main-title">
             <div>
               <h6>Sale Order</h6>
@@ -107,6 +112,8 @@
             
             </ul>
           </li>
+          @endif
+          @if(auth()->user()->role_as === 'Admin')
           <li class="sidebar-main-title">
             <div>
               <h6>Expense / Income</h6>
@@ -187,11 +194,17 @@
             </div>
           </li>
           <li class="sidebar-list">
+            <a class="sidebar-link sidebar-title link-nav {{Route::is('user.index') ? 'active' : ''}}" href="{{ route('user.index') }}">
+              <i data-feather="settings"></i><span>Employee</span>
+            </a>
+          </li>
+          <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('website.setting') ? 'active' : ''}}" href="{{ route('website.setting') }}">
               <i data-feather="settings"></i><span>Website Setting</span>
             </a>
           </li>
         </ul>
+        @endif
       </div>
       <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>
     </nav>

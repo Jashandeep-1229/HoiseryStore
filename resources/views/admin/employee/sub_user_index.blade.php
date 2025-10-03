@@ -7,7 +7,7 @@
 @endsection
 
 @section('breadcrumb-items')
-    <li class="breadcrumb-item">User</li>
+    <li class="breadcrumb-item">User - {{$user->name ?? ''}}</li>
 @endsection
 
 @section('content')
@@ -16,32 +16,37 @@
         <div class="row">
             <div class="col-12">
                 <div class="card" id="add_brand">
-                    <form action="{{route('user.store')}}" method="POST" class="modal-content" enctype="multipart/form-data">
+                    <form action="{{route('user.store')}}" method="POST" id="" class="modal-content" enctype="multipart/form-data">
                         @csrf
                         <div class="card-body row">
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4 mb-3">
                                 <label for="name">Name</label>
-                                <input type="text" name="name" id="name" autofocus placeholder="Name" oninput="this.value = this.value.toUpperCase()" class="form-control" required>
+                                <input type="text" name="name" id="name" autofocus  placeholder="Name" oninput="this.value = this.value.toUpperCase()" class="form-control" required>
                             </div>
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4">
                                 <label for="email">Email</label>
                                 <input type="email" name="email" id="email" placeholder="Email" class="form-control" required>
                             </div>
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-4">
                                 <label for="password">Password</label>
                                 <input type="password" name="password" id="password" placeholder="Password" class="form-control" required>
                                 <div class="show-hide toggle-password"><span class="show"></span></div>
                             </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="role_as">Role As</label>
-                                <select name="role_as" id="role_as" class="form-control" required>
-                                    <option value="Purchase_Management">Purchase Management</option>
-                                    <option value="Order_Management">Order Management</option>
+                           
+                            <input type="hidden" name="sub_admin_id" value="{{ $user->id ?? 0 }}">
+                            <div class="col-md-5">
+                                <label for="category_id">Category</label>
+                                <select name="category_id[]" id="category_id" class="form-control js-example-basic-multiple" required multiple>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary w-100">Add +</button>
+                                <label for="add_data">&nbsp;</label>
+                               <button type="submit" id="add_data" class="btn btn-primary w-100" >Add +</button>
                             </div>
+                           
                         </div>
                     </form>
                 </div>
@@ -84,6 +89,9 @@
         </div>
     </div>
 
+    <audio id="myAudio" controls class="d-none">
+        <source src="{{ asset('audio/Beep.wav') }}" type="audio/wav">
+    </audio>
 @endsection
 @section('script')
     <script>
@@ -112,13 +120,15 @@
             var page = $(this).attr('href').split("page=")[1];
             get_datatable(page);
         });
-       
+        
         function get_datatable(page){
             $('#get_datatable').html('<div class="loader-box"><div class="loader-37"></div></div>');
             var value = $('#basic-2_value').val();
             var search = $('#basic-2_search').val();
             var page = page ?? 1;
-            $.get('{{ route("user.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}"}, function(data){
+            var url = "{{route('sub_user.datatable',':id')}}";
+            url = url.replace(':id',{{$user->id}});
+            $.get(url, { _token: "{{csrf_token() }}",page:page,value:value,search:search}, function(data){
                 $('#get_datatable').html(data);
                 $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
             });
@@ -152,7 +162,6 @@
                         $('#name').val('');
                         $('#email').val('');
                         $('#password').val('');
-                        $('#department_id').val('').trigger('change');
                         $('#category_id').val('').trigger('change');
                         $('form button[type="submit"]').html('Save');
                         $('form button[type="submit"]').removeClass('disabled');
