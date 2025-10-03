@@ -36,7 +36,7 @@
                     @endforeach
                 </td>
                 <td>
-                    Total - {{$list->total_purchase_amount ?? 0}} <br>
+                    Total - {{formatIndianNumber($list->total_purchase_amount ?? 0)}} <br>
                     
                 </td>
                 <td>

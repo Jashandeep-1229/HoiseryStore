@@ -203,7 +203,7 @@ class LedgerController extends Controller
             'payment' => (clone $querry)->where('from', 'like', 'Payment To Vendor%')->sum('amount'),
             'received' => (clone $querry)->where('from', 'like', 'Payment Recd From Customer%')->sum('amount'),
         ];
-        $ledger = $querry->orderBy('date','desc')->paginate($request->value ?? 50);
+        $ledger = $querry->orderBy('date','desc')->where('payment_method_id','!=',0)->paginate($request->value ?? 50);
         return view('admin.report.transaction.datatable',compact('ledger','totals'));
     }
 

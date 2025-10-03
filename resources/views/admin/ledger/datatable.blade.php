@@ -4,8 +4,8 @@
             <tr>
                 <th class="all">#</th>
                 <th class="all">Name</th>
-                <th class="all">Credit</th>
-                <th class="all">Debit</th>
+                <th class="all">Credit/Out</th>
+                <th class="all">Debit/In</th>
                 <th class="all">Pending</th>
                 <th class="all">Action</th>
             </tr>

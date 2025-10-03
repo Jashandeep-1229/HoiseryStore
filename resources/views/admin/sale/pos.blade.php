@@ -33,14 +33,14 @@ footer {
     </footer>
     
  <div id="watermark" style="position: fixed;  left:50%; top:50%;  transform:translate(-50%,-50%); !important;z-index:-100000000;">
-    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('ak_logo.png'))) }}" width="320px;" style="opacity:0.12">
+    <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('ak_logo.png'))) }}" width="200px;" style="opacity:0.12">
       </div>
       <table style="width: 100%;table-layout: fixed;">
           <tbody> 
               
           <tr style="text-align:center;margin-top:20px;">
               <td style="font-size:20px;font-family:'DejaVu Sans', Times, serif;margin-bottom:-20px;border-bottom:1px dashed black">
-                <b style="">AK & AASHA FASHION
+                <b style=""><img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('ak_logo.png'))) }}" width="100px;" style="opacity:1">
                     <br>
                     <div style="margin-top:-12px">
                     <small style="font-size:12px;">Wholesale in all types of variety</small>
@@ -75,10 +75,10 @@ footer {
       <table style="width: 100%;table-layout: fixed;margin-top:20px">
         <thead> 
             <tr>
-                <th style="border-bottom:1px dashed black; font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif" width="50%">ARTICLE</th>
-                <th style="border-bottom:1px dashed black; font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif">PRICE</th>
-                <th style="border-bottom:1px dashed black; font-weight:bold; text-align:right; font-size:11px;font-family:'DejaVu Sans', Times, serif">QTY</th>
-                <th style="border-bottom:1px dashed black; font-weight:bold; text-align:right; font-size:11px;font-family:'DejaVu Sans', Times, serif">TOTAL</th>
+                <th style="border-bottom:1px dashed black; font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif" width="30%">ARTICLE</th>
+                <th style="border-bottom:1px dashed black; font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif" wisth="20%">PRICE</th>
+                <th style="border-bottom:1px dashed black; font-weight:bold; text-align:right; font-size:11px;font-family:'DejaVu Sans', Times, serif" width="22%">QTY</th>
+                <th style="border-bottom:1px dashed black; font-weight:bold; text-align:right; font-size:11px;font-family:'DejaVu Sans', Times, serif" width="22%">TOTAL</th>
             </tr>
         </thead>
         <tbody>
@@ -93,10 +93,10 @@ footer {
                     // keep only digits and dashes
                     $numberOnly = preg_replace('/[^0-9\-]/', '', $articleName);
                 @endphp
-                <td style="border-bottom:1px dashed #000; font-size:12px;font-family:'DejaVu Sans', Times, serif"> {{ $numberOnly ?? '' }} <small>{{$details->item_detail->category->name ?? ''}}</small></td>
+                <td style="border-bottom:1px dashed #000; font-size:12px;font-family:'DejaVu Sans', Times, serif"> {{ $numberOnly ?? '' }} <br> <small style="font-size:10px;">{{$details->item_detail->category->name ?? ''}}</small></td>
                 <td style="border-bottom:1px dashed #000; font-size:12px;font-family:'DejaVu Sans', Times, serif">{{$details->selling_price ?? $details->item_detail->selling_price}}</td>
                 <td style="border-bottom:1px dashed #000; font-size:12px; text-align:right;font-family:'DejaVu Sans', Times, serif">{{$details->quantity}}</td>
-                <td style="border-bottom:1px dashed #000; font-size:12px; text-align:right;font-family:'DejaVu Sans', Times, serif">{{$details->quantity * ($details->selling_price ?? $details->item_detail->selling_price)}}</td>
+                <td style="border-bottom:1px dashed #000; font-size:12px; text-align:right;font-family:'DejaVu Sans', Times, serif">{{formatIndianNumberWithoutDecimal($details->quantity * ($details->selling_price ?? $details->item_detail->selling_price))}}</td>
             </tr>
             @php
                 $total += $details->quantity * ($details->selling_price ?? $details->item_detail->selling_price);
@@ -107,9 +107,23 @@ footer {
         <tfoot>
             <tr>
                 <th style=" font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif" width="50%"></th>
-                <th style=" font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif">Total</th>
+                <th style=" font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif"></th>
+                <th style=" font-weight:bold; font-size:10px;text-align:right;font-family:'DejaVu Sans', Times, serif">T. Qty</th>
                 <th style=" font-weight:bold; font-size:11px;text-align:right;font-family:'DejaVu Sans', Times, serif">{{$total_quantity}}</th>
-                <th style=" font-weight:bold; font-size:11px;text-align:right;font-family:'DejaVu Sans', Times, serif">₹{{$total}}</th>
+            </tr>
+            @if($discount_amount > 0)
+            <tr>
+                <th style=" font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif" width="50%"></th>
+                <th style=" font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif"></th>
+                <th style=" font-weight:bold; font-size:10px;text-align:right;font-family:'DejaVu Sans', Times, serif">Disc</th>
+                <th style=" font-weight:bold; font-size:11px;text-align:right;font-family:'DejaVu Sans', Times, serif">₹{{$discount_amount}}</th>
+            </tr>
+            @endif
+            <tr>
+                <th style=" font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif" width="50%"></th>
+                <th style=" font-weight:bold; font-size:11px;text-align:left;font-family:'DejaVu Sans', Times, serif"></th>
+                <th style=" font-weight:bold; font-size:10px;text-align:right;font-family:'DejaVu Sans', Times, serif">T. Amt</th>
+                <th style=" font-weight:bold; font-size:11px;text-align:right;font-family:'DejaVu Sans', Times, serif">₹{{formatIndianNumberWithoutDecimal($total - $discount_amount)}}</th>
             </tr>
         </tfoot>
        

@@ -109,11 +109,13 @@ class SaleOrderController extends Controller
             $obsIds = [];
             $stockIds = [];
             foreach($request->get('add',[]) as $o => $obs){
+               
                 $obs['user_id'] = auth()->user()->id;
                 $obs['from'] = 'Sale';
                 $obs['from_id'] = $sale->id;
                 $obs['date'] = $sale->sale_date;
-                $item_detail = ItemDetail::find($obs['item_detail_id']);
+                $item_detail = ItemDetail::withTrashed()->find($obs['item_detail_id']);
+               
                 $obs['item_id'] = $item_detail->item_id;
                 $obs['brand_id'] = $item_detail->brand_id;
                 $obs['category_id'] = $item_detail->category_id;
@@ -158,7 +160,7 @@ class SaleOrderController extends Controller
             }
             foreach ($request->payment_details as $key => $amount) {
                 $payment_method_id = PaymentMethod::where('name', $key)->first()->id ?? 'CASH';
-        
+               
                 if (isset($existingLedgers[$key])) {
                     // Update existing entry
                     $ledger = $existingLedgers[$key];
@@ -185,7 +187,9 @@ class SaleOrderController extends Controller
     }
     public function pos($id){
         $sale = SaleOrder::find($id);
-        $view = view('admin.sale.pos', compact('sale'));
+        $discount = Ledger::where('from_id',$sale->id)->where('payment_method_id',4)->first();
+        $discount_amount = $discount->amount ?? 0;
+        $view = view('admin.sale.pos', compact('sale','discount_amount'));
         $html = $view->render();
         $pdf = PDF::loadHTML($html);
         $pdf->getDomPDF()->set_option('defaultFont', 'Arial Unicode MS');

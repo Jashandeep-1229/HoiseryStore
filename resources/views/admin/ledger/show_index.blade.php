@@ -30,8 +30,8 @@
                             <div class="col-md-3 mb-3">
                                 <select class="form-control" name="dr_cr" id="dr_cr" required>
                                    
-                                    <option value="Dr">Debit</option>
-                                    <option value="Cr">Credit</option>
+                                    <option value="Dr">Debit/In</option>
+                                    <option value="Cr">Credit/Out</option>
                                 </select>
                             </div>
                             <div class="col-md-3">

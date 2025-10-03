@@ -71,7 +71,11 @@
                         <div class="col-md-6 mt-2">
                             <div class="form-group">
                                 <h6>Enter Article No<span>*</span></h6>
-                                <input type="text" name="article_no" id="article_no" value="{{ old('article_no') }}" class="form-control">
+                                <div class="input-group ">
+                                    <span class="input-group-text" id="number_format">{{$number_format + 1}}</span>
+                                    <input class="form-control form-control-sm" type="text" name="article_no" id="article_no" value="{{ old('article_no') }}"  placeholder="Enter Article No">
+                                </div>
+                                {{-- <input type="text" name="article_no" id="article_no" value="{{ old('article_no') }}" class="form-control"> --}}
 
                             </div>
                         </div>
@@ -298,12 +302,13 @@
         var brand_id = $('#brand_id').val() || 0;
         var category_id = $('#category_id').val() || 0;
         var key = $('.sr').length ?? 0;
+        var number_format = parseInt($('#number_format').text())
         if(brand_id == 0 || category_id == 0){
             alert('Please select brand or category');
             return false;
         }
         else{
-            $.get("{{route('item.add_article')}}", {article_name: article_no, brand_id: brand_id, category_id: category_id,key:key,item_id:item_id}, function(data){
+            $.get("{{route('item.add_article')}}", {article_name: article_no, brand_id: brand_id, category_id: category_id,key:key,item_id:item_id,number_format:number_format}, function(data){
                 if(data == -1){
                     alert('Article already added');
                     return false;
@@ -313,8 +318,9 @@
                     return false;
                 }
                 else{
-                    $('#get_data_list').append(data);
+                    $('#get_data_list').append(data.html);
                     $('#article_no').val('');
+                    $('#number_format').text(data.number_format);
                 }
             });
         }

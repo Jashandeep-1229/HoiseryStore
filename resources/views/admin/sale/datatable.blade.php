@@ -5,7 +5,7 @@
                 <th class="all">#</th>
                 <th class="all">Date</th>
                 <th class="all">Sale No</th>
-                <th class="all">Vendor</th>
+                <th class="all">Customer</th>
                 <th class="all">Article Details</th>
                 <th class="all">Amount</th>
                 <th class="all">Action</th>
@@ -41,7 +41,7 @@
                 </td>
                 <td>
                    
-                    <a href="{{route('sale.pos',$list)}}" class="btn btn-dark btn-sm  pointer p-1 f-14" data-toggle="tooltip" title="Edit">
+                    <a href="{{route('sale.pos',$list)}}" target="_blank" class="btn btn-dark btn-sm  pointer p-1 f-14" data-toggle="tooltip" title="Edit">
                         <i class="fa fa-file"></i>
                     </a>
                     @if (auth()->user()->role_as == 'Admin')

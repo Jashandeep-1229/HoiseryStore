@@ -187,12 +187,22 @@ class PurchaseOrderController extends Controller
                 $obs['from'] = 'Purchase';
                 $obs['from_id'] = $purchase->id;
                 $item_detail = ItemDetail::updateOrCreate(['id' => $obs['item_detail_id']],$obs);
-                $item_detail->barcode_value = $obs['article_name'].'-'.$item_detail->size;
+                // $item_detail->barcode_value = $obs['article_name'].'-'.$item_detail->size;
+                $baseBarcode = $obs['article_name']. '-' . $item_detail->size;
+                    $barcode = $baseBarcode;
+                    $counter = 1;
+
+                    while (ItemDetail::where('barcode_value', $barcode)->exists()) {
+                        $barcode = $baseBarcode . '-' . $counter;
+                        $counter++;
+                    }
+
+                    $item_detail->barcode_value = $barcode;
                 $item_detail->save();
 
                 $check = ItemDetail::where('item_id',$obs['item_id'])->where('is_temp',1)->get()->count();
                 if($check <= 0){
-                    $item = Item::find($obs['item_id']);
+                    $item = Item::withTrashed()->find($obs['item_id']);
                     $item->from = 'Purchase';
                     $item->from_id = $purchase->id;
                     $item->is_temp = 0;

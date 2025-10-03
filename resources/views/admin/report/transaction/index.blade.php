@@ -1,13 +1,13 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Transaction Report')
+@section('title', 'Office Transaction Report')
 
 @section('css')
 
 @endsection
 
 @section('breadcrumb-items')
-    <li class="breadcrumb-item">Transaction Report</li>
+    <li class="breadcrumb-item">Office Transaction Report</li>
 @endsection
 
 @section('content')
@@ -126,7 +126,7 @@
                             download: 'open', // This tells pdfMake to open instead of download
                             orientation: 'portrait', // Optional
                             pageSize: 'A4', // Optional
-                            title: 'Aasha Fashion - Transaction Report' // Optional
+                            title: 'Aasha Fashion - Office Transaction Report' // Optional
                         },
                         'print'
                     ]

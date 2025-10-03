@@ -70,7 +70,11 @@ class ItemController extends Controller
                 $item = new Item();
                 $item->from = 'Manually';
                 $item->from_id = 0;
-                $item->article_name = $request->article_name;
+                $item->number_from = $request->number_format;
+                $item->article_name = $request->number_format.'-'.$request->article_name;
+                if(Item::where('article_name',$item->article_name)->where('is_temp',0)->first()){
+                    return -1;
+                }
                 $item->brand_id = $request->brand_id;
                 $item->category_id = $request->category_id;
                 $item->min_alert = $request->min_alert ?? 5;
@@ -81,10 +85,24 @@ class ItemController extends Controller
             $item_detail->item_id = $item->id;
             $item_detail->brand_id = $request->brand_id;
             $item_detail->category_id = $request->category_id;
-            $item_detail->article_name = $request->article_name;
+            $item_detail->article_name = $request->number_format.'-'.$request->article_name;
             $item_detail->save();
+            
         }
-        return view('admin.item.add_article',compact('item_detail','item'));
+      
+        $number_format = $request->number_format;
+        while (
+            Item::where('number_from', $number_format)
+                ->exists()
+        ) {
+            $number_format++;
+        }
+        $html = view('admin.item.add_article', compact('item_detail','item','number_format'))->render();
+
+        return response()->json([
+            'html' => $html,
+            'number_format' => $number_format
+        ]);
     }
     public function add_more(Request $request){
         $old_detail = ItemDetail::where('id',$request->item_detail_id)->first();
@@ -143,7 +161,8 @@ class ItemController extends Controller
         $category = Category::where('status',1)->get();
         $brand = Brand::where('status',1)->get();
         $season = Season::where('status',1)->get();
-        return view('admin.item.add_edit',compact('category','brand','season'));
+        $number_format = Item::where('is_temp',0)->latest()->first()->number_from ?? 156;
+        return view('admin.item.add_edit',compact('category','brand','season','number_format'));
     }
 
     /**
@@ -210,7 +229,17 @@ class ItemController extends Controller
                     $item_detail->quantity = $detail['quantity'];
                     $item_detail->mutha = $detail['mutha'];
                     $item_detail->is_temp = 0;
-                    $item_detail->barcode_value = $item_detail->article_name.'-'.$detail['size'];
+                    // $item_detail->barcode_value = $item_detail->article_name.'-'.$detail['size'];
+                    $baseBarcode = $item_detail->article_name . '-' . $detail['size'];
+                    $barcode = $baseBarcode;
+                    $counter = 1;
+
+                    while (ItemDetail::where('barcode_value', $barcode)->exists()) {
+                        $barcode = $baseBarcode . '-' . $counter;
+                        $counter++;
+                    }
+
+                    $item_detail->barcode_value = $barcode;
                     $item_detail->update();
 
                     $itemDetail_ids[] = $item_detail->id;;
@@ -267,7 +296,8 @@ class ItemController extends Controller
         $category = Category::where('status',1)->get();
         $brand = Brand::where('status',1)->get();
         $season = Season::where('status',1)->get();
-        return view('admin.item.add_edit',compact('category','brand','item','season'));
+        $number_format = Item::where('is_temp',0)->latest()->first()->number_from ?? 156;
+        return view('admin.item.add_edit',compact('category','brand','item','season','number_format'));
     }
 
     public function get_barcode(Request $request){

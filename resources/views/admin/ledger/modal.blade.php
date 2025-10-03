@@ -20,8 +20,8 @@
                 <h6>Dr/Cr</h6>
                 <select class="form-control" name="dr_cr" id="dr_cr" required>
                                    
-                    <option value="Dr" {{$ledger->dr_cr == 'Dr' ? 'selected' : ''}}>Debit</option>
-                    <option value="Cr" {{$ledger->dr_cr == 'Cr' ? 'selected' : ''}}>Credit</option>
+                    <option value="Dr" {{$ledger->dr_cr == 'Dr' ? 'selected' : ''}}>Debit/In</option>
+                    <option value="Cr" {{$ledger->dr_cr == 'Cr' ? 'selected' : ''}}>Credit/Out</option>
                 </select>
             </div>
             <div class="col-md-12 form-group mb-3">

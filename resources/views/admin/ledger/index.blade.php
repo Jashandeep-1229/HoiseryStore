@@ -1,13 +1,13 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Vendor - Ledger')
+@section('title', $title . ' - Ledger')
 
 @section('css')
 
 @endsection
 
 @section('breadcrumb-items')
-    <li class="breadcrumb-item">Vendor - Ledger</li>
+    <li class="breadcrumb-item">{{$title}} - Ledger</li>
 @endsection
 
 @section('content')

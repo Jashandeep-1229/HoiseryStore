@@ -13,7 +13,7 @@
     </div>
     <div class="col-md-2">
       <div class="card small-widget"> 
-        <div class="card-body success"> <span class="f-light">Total Income</span>
+        <div class="card-body success"> <span class="f-light">Cash In Hand</span>
           <div class="d-flex align-items-end gap-1">
             <h4>{{formatIndianNumber($totals['income'] + $totals['received'])}}</h4><span class="font-success f-12 f-w-500"></span>
           </div>
@@ -56,8 +56,8 @@
             <th class="all">From</th>
             <th class="all">Account</th>
             <th class="all">Payment Method</th>
-            <th class="all">Dr</th>
-            <th class="all">Cr</th>
+            <th class="all">Cr / Out</th>
+            <th class="all">Dr / In</th>
             <th class="all">View</th>
         </tr>
     </thead>
@@ -81,8 +81,8 @@
             </td>
             <td>{{$item->account->name ?? ''}}</td>
             <td>{{$item->payment_method->name ?? ''}}</td>
-            <td>{{$item->dr_cr == 'Dr' ? formatIndianNumber($item->amount) : '-'}}</td>
-            <td>{{$item->dr_cr == 'Cr' ? formatIndianNumber($item->amount) : '-'}}</td>
+            <td class="text-danger">{{$item->dr_cr == 'Dr' ? formatIndianNumber($item->amount) : '-'}}</td>
+            <td class="text-success">{{$item->dr_cr == 'Cr' ? formatIndianNumber($item->amount) : '-'}}</td>
           
             <td>
                 <a href="{{route('ledger.show',$item->account->id)}}" class="btn btn-info btn-sm  pointer p-1 f-14" data-toggle="tooltip" title="Edit">

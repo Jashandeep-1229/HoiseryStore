@@ -36,7 +36,7 @@
                     @endforeach
                 </td>
                 <td>
-                    Total - {{$list->total_sale_amount ?? 0}} <br>
+                    Total - {{formatIndianNumberWithoutDecimal($list->total_sale_amount ?? 0)}} <br>
                     
                 </td>
                 <td>

@@ -17,3 +17,19 @@ if (!function_exists('formatIndianNumber')) {
         }
     }
 }
+if (!function_exists('formatIndianNumberWithoutDecimal')) {
+    function formatIndianNumberWithoutDecimal($num) {
+        $integerPart = (string)intval($num); // remove decimal part
+
+        $lastThree = substr($integerPart, -3);
+        $restUnits = substr($integerPart, 0, -3);
+
+        if (strlen($restUnits) > 0) {
+            $restUnits = preg_replace('/\B(?=(\d{2})+(?!\d))/', ',', $restUnits);
+            return $restUnits . ',' . $lastThree;
+        } else {
+            return $lastThree;
+        }
+    }
+}
+

@@ -62,7 +62,7 @@
                                                 <td rowspan="1">
                                                     <input type="hidden" name="add[{{$key}}][id]" value="{{$detail->id}}">
                                                     <input type="hidden" name="add[{{$key}}][item_id]" value="{{$detail->item_id}}">
-                                                    <input type="hidden" name="add[{{$key}}][item_detail_id]" value="{{$detail->id}}">
+                                                    <input type="hidden" name="add[{{$key}}][item_detail_id]" value="{{$detail->item_detail->id}}">
                                                     <input type="hidden" name="add[{{$key}}][article_name]" value="{{$detail->item_detail->article_name ?? ''}}">
                                                     <small>{{$detail->item_detail->article_name ?? ''}}</small>  <small>{{$detail->item_detail->size ?? ''}}</small> 
                                                    
