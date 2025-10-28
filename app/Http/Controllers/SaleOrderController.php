@@ -85,7 +85,8 @@ class SaleOrderController extends Controller
     {
         $payment_method = PaymentMethod::where('status',1)->get();
         $account_master = AccountMaster::where('status',1)->where('from','Customer')->get();
-        return view('admin.sale.add_edit',compact('account_master','payment_method'));
+        $article_name = ItemDetail::where('barcode_value','!=','')->where('status',1)->get()->pluck('barcode_value')->toArray();
+        return view('admin.sale.add_edit',compact('account_master','payment_method','article_name'));
     }
 
     /**
@@ -100,6 +101,7 @@ class SaleOrderController extends Controller
         $input = $request->all();
         $input['payment_method'] = json_encode($request->payment_method);
         $input['status'] = 1;
+        $input['sale_date'] = $request->sale_date;
         $sale = SaleOrder::updateOrCreate(['id' => $input['id']],$input);
         if($input['id'] == 0){
             $sale->sale_no = 'AF-0'.$sale->id;
@@ -138,7 +140,7 @@ class SaleOrderController extends Controller
         $ledger->payment_method_id = 0;
         $ledger->account_id = $request->account_id;
         $ledger->date = $sale->sale_date;
-        $ledger->amount = $sale->total_sale_amount;
+        $ledger->amount = $sale->total_sale_amount - $sale->total_discount + $sale->total_tax + $sale->total_courier;
         $ledger->dr_cr = 'Dr';
         $ledger->status = 1;
         $ledger->save();
@@ -182,6 +184,21 @@ class SaleOrderController extends Controller
                 }
             }
         }
+        else{
+            $fromField = 'Payment Recd From Customer - ' . $sale->id;
+            $existingLedgers = Ledger::where('from', $fromField)
+            ->where('from_id', $sale->id)
+            ->where('dr_cr', 'Cr')
+            ->get()
+            ->keyBy(function($item) {
+                // Use payment method name as key
+                return PaymentMethod::find($item->payment_method_id)->name ?? 'CASH';
+            });
+            foreach ($existingLedgers as $methodName => $ledger) {
+                $ledger->delete();
+               
+            }
+        }
         $pdfPreviewUrl = route('sale.pos', $sale);
         return redirect()->route('sale.index')->with(['status' => 'Sale Order Added Successfully','pdf_url'=>$pdfPreviewUrl]);
     }
@@ -194,8 +211,20 @@ class SaleOrderController extends Controller
         $pdf = PDF::loadHTML($html);
         $pdf->getDomPDF()->set_option('defaultFont', 'Arial Unicode MS');
         $pdf->getDomPDF()->set_option('fontCache', public_path('font_cache'));
-        
-        $pdf->getDomPDF()->setPaper([0, 0, 204, 500], 'portrait', 'mm');
+        $header_height = 240;
+        $each_item_height = 27;
+        $footer_height = 90;
+        $more_space_1 = 0;
+        $more_space_2 = 0;
+        if($sale->total_tax > 0){
+            $more_space_1 = 10;
+        }
+        if($sale->total_courier > 0){
+            $more_space_2 = 10;
+        }
+        $space_height = 45;
+        $total_height = $header_height + ($each_item_height * count($sale->details)) + $footer_height + $space_height + $more_space_1 + $more_space_2;
+        $pdf->getDomPDF()->setPaper([0, 0, 204, $total_height], 'portrait', 'mm');
         return $pdf->stream($sale->sale_no.'.pdf');
     }
 
@@ -226,7 +255,8 @@ class SaleOrderController extends Controller
         $sale = SaleOrder::find($id);
         $payment_method = PaymentMethod::where('status',1)->get();
         $account_master = AccountMaster::where('status',1)->where('from','Customer')->get();
-        return view('admin.sale.add_edit',compact('account_master','payment_method','sale'));
+        $article_name = ItemDetail::where('barcode_value','!=','')->where('status',1)->get()->pluck('barcode_value')->toArray();
+        return view('admin.sale.add_edit',compact('account_master','payment_method','sale','article_name'));
     }
 
     /**

@@ -65,13 +65,12 @@ class ManageStockController extends Controller
         return view('admin.manage_stock.datatable',compact('manage_stock'));
     }
     public function get_quantity(Request $request){
-       
+        
         $remainingStock = ManageStock::where('item_detail_id',$request->item_detail_id)
         ->select('id','item_detail_id', 'item_id', 'brand_id', 'category_id', 'from', 'from_id'
         ,\DB::raw('SUM(CASE WHEN in_out IN ("In", "GR") THEN quantity ELSE -quantity END) AS remaining'))
         ->groupBy(['item_detail_id','item_id', 'brand_id', 'category_id'])
         ->first();
-
         return response()->json(['result'=> $remainingStock]);
     }
     public function average(){

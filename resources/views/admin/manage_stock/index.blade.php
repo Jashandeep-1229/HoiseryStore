@@ -87,7 +87,7 @@
                                                 <option value="250">250</option>
                                                 <option value="500">500</option>
                                                 <option value="1000">1000</option>
-                                            </select> entries
+                                            </select>
                                         </label>
                                     </div>
                                 </div>
@@ -210,7 +210,8 @@
             var page = page ?? 1;
             $.get('{{ route("manage_stock.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}",title:"{{$title}}",from_date:from_date,to_date:to_date,article:article}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                  $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
+                scrollCollapse: true,});
             });
         }
 

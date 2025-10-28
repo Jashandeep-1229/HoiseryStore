@@ -23,8 +23,10 @@
             <div class="col-md-12 form-group mb-3">
                 <h6>Role As</h6>
                 <select name="role_as" id="role_as" class="form-control" required>
+                    <option value="Admin" {{ (old('role_as', $user->role_as ?? '') == 'Admin') ? 'selected' : '' }}>Admin</option>
                     <option value="Order_Management" {{ (old('role_as', $user->role_as ?? '') == 'Order_Management') ? 'selected' : '' }}>Order Management</option>
                     <option value="Stock_Management" {{ (old('role_as', $user->role_as ?? '') == 'Stock_Management') ? 'selected' : '' }}>Stock Management</option>
+                    <option value="Purchase_Management" {{ (old('role_as', $user->role_as ?? '') == 'Purchase_Management') ? 'selected' : '' }}>Purchase Management</option>
                 </select>
             </div>
 

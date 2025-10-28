@@ -13,10 +13,11 @@
     </td>
     <!-- first detail row -->
     <td> <input type="number" step="any" name="add[{{request()->key}}][selling_price]"  value="{{$item_detail->selling_price}}" class="form-control form-control-sm"> </td>
+    <td> <input type="number" step="any" name="add[{{request()->key}}][discount]"  oninput="recalculate_totals({{ $item_detail->id }})" value="{{$item_detail->discount ?? 0}}" class="form-control form-control-sm"> </td>
     <td> <input type="number" step="any" name="add[{{request()->key}}][quantity]" value="{{$item_detail->quantity}}" max="{{$remainingStock->remaining ?? 0}}" oninput="recalculate_totals({{ $item_detail->id }})" class="form-control form-control-sm"> </td>
     
 
     <td rowspan="1">
-        <a class="btn btn-danger btn-xs" onclick="remove_article()" href="javascript:void(0)">-</a>
+        <a class="btn btn-danger btn-xs" onclick="remove_article($(this),{{$item_detail->id}})" href="javascript:void(0)">-</a>
     </td>
 </tr>

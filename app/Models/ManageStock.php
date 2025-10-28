@@ -19,6 +19,7 @@ class ManageStock extends Model
         'category_id',
         'purchase_price',
         'selling_price',
+        'discount',
         'item_id',
         'item_detail_id',
         'in_out',

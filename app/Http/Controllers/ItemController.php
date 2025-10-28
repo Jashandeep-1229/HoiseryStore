@@ -71,7 +71,7 @@ class ItemController extends Controller
                 $item->from = 'Manually';
                 $item->from_id = 0;
                 $item->number_from = $request->number_format;
-                $item->article_name = $request->number_format.'-'.$request->article_name;
+                $item->article_name = $request->article_name;
                 if(Item::where('article_name',$item->article_name)->where('is_temp',0)->first()){
                     return -1;
                 }
@@ -85,18 +85,12 @@ class ItemController extends Controller
             $item_detail->item_id = $item->id;
             $item_detail->brand_id = $request->brand_id;
             $item_detail->category_id = $request->category_id;
-            $item_detail->article_name = $request->number_format.'-'.$request->article_name;
+            $item_detail->article_name = $request->article_name;
             $item_detail->save();
             
         }
       
-        $number_format = $request->number_format;
-        while (
-            Item::where('number_from', $number_format)
-                ->exists()
-        ) {
-            $number_format++;
-        }
+        $number_format = 1;
         $html = view('admin.item.add_article', compact('item_detail','item','number_format'))->render();
 
         return response()->json([
@@ -161,7 +155,7 @@ class ItemController extends Controller
         $category = Category::where('status',1)->get();
         $brand = Brand::where('status',1)->get();
         $season = Season::where('status',1)->get();
-        $number_format = Item::where('is_temp',0)->latest()->first()->number_from ?? 156;
+        $number_format = Item::where('is_temp',0)->latest()->first()->number_from ?? 0;
         return view('admin.item.add_edit',compact('category','brand','season','number_format'));
     }
 
@@ -191,6 +185,7 @@ class ItemController extends Controller
                     $item->is_temp = 1;
                     $item->save();
                 }
+               
                 $item->season_id = $request->season_id;
                 $item->article_name = $article['article_name'];
                 $item->is_temp = 0;

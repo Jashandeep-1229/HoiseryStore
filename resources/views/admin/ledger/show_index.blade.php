@@ -1,14 +1,11 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Ledger')
+@section('title', 'Ledger - '.$account_master->name ?? '')
 
 @section('css')
 
 @endsection
 
-@section('breadcrumb-items')
-    <li class="breadcrumb-item">Ledger - {{$account_master->name ?? ''}}</li>
-@endsection
 
 @section('content')
     <div class="container-fluid">
@@ -29,9 +26,13 @@
                             </div>
                             <div class="col-md-3 mb-3">
                                 <select class="form-control" name="dr_cr" id="dr_cr" required>
-                                   
-                                    <option value="Dr">Debit/In</option>
-                                    <option value="Cr">Credit/Out</option>
+                                   @if($account_master->from == 'Vendor')
+                                    <option value="Dr">Payment Paid</option>
+                                    <option value="Cr">Payment Due</option>
+                                    @else
+                                    <option value="Cr">Payment Recd</option>
+                                    <option value="Dr">Payment Due</option>
+                                    @endif
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -137,7 +138,8 @@
             console.log('as');
             $.get('{{ route("ledger.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}",account_id:{{$account_master->id ?? 0}},'from':'History'}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                  $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
+                scrollCollapse: true,});
             });
         }
 

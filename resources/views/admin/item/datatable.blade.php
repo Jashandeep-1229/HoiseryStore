@@ -8,6 +8,7 @@
                 <th class="all">Category</th>
                 <th class="all">Article</th>
                 <th class="all">Details</th>
+                <th class="all">Barcode</th>
                 <th class="all">Status</th>
                 <th class="all">Action</th>
             </tr>
@@ -38,7 +39,16 @@
                 </td>
                 <td>
                     @foreach($list->details ?? '[]' as  $xyz => $det)
-                    {{$det->size}} <small class="text-primary">({{$det->barcode_value ?? ''}})</small>
+                    {{$det->size}}
+                    
+                    @if(!$loop->last)
+                    <br>
+                    @endif
+                    @endforeach
+                </td>
+                <td>
+                    @foreach($list->details ?? '[]' as  $xyz => $det)
+                    <span class="text-primary">{{$det->barcode_value ?? ''}}</span>
                     
                     @if(!$loop->last)
                     <br>

@@ -9,7 +9,7 @@
   --theme-deafult: #7366ff;
   --theme-secondary: #f73164;
   --light-background: rgba(242, 243, 247, 0.7);
-  --body-font-color: #2F2F3B;
+  --body-font-color: #000000;
   --chart-border: #ECF3FA;
   --recent-chart-bg: #FCFCFD;
   --light-bg: #F6F7F9;
@@ -1614,7 +1614,7 @@ svg.f-light {
   border-color: #f4f4f4;
   color: #f4f4f4;
   background-color: transparent;
-  color: #2F2F3B;
+  color: #000000;
 }
 .btn-outline-light.disabled {
   color: #f4f4f4;
@@ -2480,7 +2480,8 @@ body {
   font-size: 14px;
   overflow-x: hidden;
   font-family: Rubik, sans-serif;
-  color: #2F2F3B;
+  color: #000000;
+  font-weight: 700;
 }
 
 ul {
@@ -27997,8 +27998,8 @@ body[class*=dark-] .for-light {
   z-index: 1;
 }
 .dropdown-menu .dropdown-item {
-  color: #2b2b2b;
-  opacity: 0.6;
+  color: #000;
+  opacity: 0.9;
   font-size: 13px;
   padding: 6px 12px;
   border-top: 1px solid #efefef;
@@ -29800,7 +29801,8 @@ button[data-toggle=dropdown]:hover ~ .dropdown-menu {
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links li a span {
   letter-spacing: 0.7px;
   text-transform: capitalize;
-  color: rgba(82, 82, 108, 0.8);
+  font-weight: bold;
+  color: #000;
 }
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links li a.link-nav .according-menu {
   display: none;
@@ -29947,7 +29949,7 @@ button[data-toggle=dropdown]:hover ~ .dropdown-menu {
 .page-wrapper.compact-wrapper .page-body-wrapper div.sidebar-wrapper .sidebar-main .sidebar-links .simplebar-wrapper .simplebar-mask .simplebar-content-wrapper .simplebar-content > li .sidebar-submenu li a {
   padding: 7px 25px;
   font-size: 14px;
-  color: rgba(47, 47, 59, 0.6);
+  color: #000;
   display: block;
   position: relative;
   letter-spacing: 0.06em;

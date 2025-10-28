@@ -113,7 +113,40 @@
             var customer_id = $('#customer_id').val();
             $.get('{{ route("sale.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}",from_date:from_date,to_date:to_date,customer_id:customer_id}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                var table = $('#basic-test').DataTable({
+            dom: 'Brt',
+            "pageLength": -1,
+            responsive: true,
+            scrollY: "50vh",
+            scrollCollapse: true,
+            buttons: [
+                { extend: 'copy', text: 'Copy' },
+                { extend: 'csv', text: 'CSV' },
+                { extend: 'excel', text: 'Excel' },
+                { extend: 'pdf', text: 'PDF' },
+                { extend: 'print', text: 'Print' },
+                {
+                    text: 'Show',  // custom button
+                    attr: { id: 'toggle_amount' },
+                    className: 'btn btn-primary',
+                    action: function (e, dt, node, config) {
+                        var column = table.column(5);
+                        var isVisible = column.visible();
+
+                        column.visible(!isVisible);
+
+                        if (isVisible) {
+                            node.text('Show');
+                            node.removeClass('btn-danger').addClass('btn-primary');
+                        } else {
+                            node.text('Hide');
+                            node.removeClass('btn-primary').addClass('btn-danger');
+                        }
+                    }
+                }
+            ]
+        });
+                table.column(5).visible(false);
             });
         }
 

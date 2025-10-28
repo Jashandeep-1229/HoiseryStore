@@ -35,6 +35,7 @@
                             <div class="col-md-3 mb-3">
                                 <label for="role_as">Role As</label>
                                 <select name="role_as" id="role_as" class="form-control" required>
+                                    <option value="Admin">Admin</option>
                                     <option value="Purchase_Management">Purchase Management</option>
                                     <option value="Order_Management">Order Management</option>
                                     <option value="Stock_Management">Stock Management</option>
@@ -53,10 +54,10 @@
                                 <label>Show 
                                     <select name="basic-2_value"  id="basic-2_value" aria-controls="basic-2" class="form-control form-control-sm">
                                         <option value="50">50</option>
-                                        <option value="250">250</option>
+                                        <option value="250" selected>250</option>
                                         <option value="500">500</option>
                                         <option value="1000">1000</option>
-                                    </select> entries
+                                    </select>
                                 </label>
                             </div>
                             <div class="dataTables_filter">
@@ -121,7 +122,8 @@
             var page = page ?? 1;
             $.get('{{ route("user.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}"}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                  $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
+                scrollCollapse: true,});
             });
         }
 

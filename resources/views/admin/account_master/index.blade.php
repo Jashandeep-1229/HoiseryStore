@@ -23,7 +23,7 @@
                                 <input type="text" name="name" id="name" autofocus  placeholder="Name" oninput="this.value = this.value.toUpperCase()" class="form-control" required>
                             </div>
                             
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <select class="form-control" name="from" id="from" required>
                                     <option value="" selected disabled>Select From</option>
                                     <option value="Vendor">Vendor</option>
@@ -37,12 +37,15 @@
                             <div class="col-md-3 d-none" id="business_name_div">
                                 <input type="text" name="business_name" id="business_name" placeholder="Business Name" class="form-control">
                             </div>
-                            <div class="col-md-2 d-none" id="phone_no_div">
+                            <div class="col-md-3 d-none" id="phone_no_div">
                                 <input type="text" name="phone_no" id="phone_no" placeholder="Phone Number" class="form-control">
+                            </div>
+                            <div class="col-md-3 d-none mt-3" id="city_div">
+                                <input type="text" name="city" id="city" placeholder="City" class="form-control">
                             </div>
                             <!-- Dynamic Fields End -->
                            
-                            <div class="col-md-2">
+                            <div class="col-md-2 mt-3">
                                <button type="submit" id="add_data" class="btn btn-primary w-100" >Add +</button>
                             </div>
                            
@@ -56,7 +59,7 @@
                                 <label>Show 
                                     <select name="basic-2_value"  id="basic-2_value" aria-controls="basic-2" class="form-control form-control-sm">
                                         <option value="50">50</option>
-                                        <option value="250">250</option>
+                                        <option value="250" selected>250</option>
                                         <option value="500">500</option>
                                         <option value="1000">1000</option>
                                     </select> entries
@@ -103,15 +106,18 @@
                 if(val === 'Vendor' || val === 'Customer') {
                     $('#business_name_div').removeClass('d-none');
                     $('#phone_no_div').removeClass('d-none');
+                    $('#city_div').removeClass('d-none');
                 } else {
                     $('#business_name_div').addClass('d-none');
                     $('#phone_no_div').addClass('d-none');
+                    $('#city_div').addClass('d-none');
                 }
             });
             // Reset fields on form reset
             $('form').on('reset', function() {
                 $('#business_name_div').addClass('d-none');
                 $('#phone_no_div').addClass('d-none');
+                $('#city_div').addClass('d-none');
             });
         });
 
@@ -128,7 +134,8 @@
             var page = page ?? 1;
             $.get('{{ route("account_master.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}"}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
+                scrollCollapse: true,});
             });
         }
 

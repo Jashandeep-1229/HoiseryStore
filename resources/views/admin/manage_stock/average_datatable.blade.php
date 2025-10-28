@@ -33,8 +33,8 @@
             <td>{{$item->brand->name ?? ''}}<small> ({{$item->category->name ?? ''}}) </small></td>
             <td class="text-primary">{{$item->item_detail->article_name ?? ''}} <small>({{$item->item_detail->quantity}})</small></td>
             <td style="text-transform: uppercase">{{$item->item_detail->size ?? ''}}</td>
-            <td style="text-transform: uppercase">{{formatIndianNumber($item->item_detail->purchase_price * $item->remaining)}}</td>
-            <td style="text-transform: uppercase">{{formatIndianNumber($item->item_detail->selling_price * $item->remaining)}}</td>
+            <td style="text-transform: uppercase" class="text-danger">{{formatIndianNumber($item->item_detail->purchase_price * $item->remaining)}} <a href="{{route('item.edit',$item->item_id)}}" class="text-danger" target="_blank"><i class="fa fa-edit"></i></a></td>
+            <td style="text-transform: uppercase" class="text-success">{{formatIndianNumber($item->item_detail->selling_price * $item->remaining)}} <a href="{{route('item.edit',$item->item_id)}}" class="text-success" target="_blank"><i class="fa fa-edit"></i></a></td>
             @php
                 $total_pcs += $item->remaining;
                 $total_purchase += $item->item_detail->purchase_price * $item->remaining;

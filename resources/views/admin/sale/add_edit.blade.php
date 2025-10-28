@@ -22,7 +22,7 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <h6>Sale Date<span>*</span></h6>
-                                <input type="date" name="sale_date" id="sale_date" value="{{ $sale->date ?? old('sale_date') ?? date('Y-m-d')}}" class="form-control">
+                                <input type="date" name="sale_date" id="sale_date" value="{{ $sale->sale_date ?? old('sale_date') ?? date('Y-m-d')}}" class="form-control">
                             </div>
                         </div>
                         <div class="col-md-3 form-group mb-3">
@@ -31,7 +31,7 @@
                             <select class="js-example-basic-single" name="account_id" id="account_id" required>
                                 <option value="" selected disabled>Select Customer...</option>
                                 @foreach($account_master as $item)
-                                <option value="{{ $item->id }}" {{ ($sale->account_id ?? '') == $item->id ? 'selected':'' }}>{{ $item->name }}</option>
+                                <option value="{{ $item->id }}" {{ ($sale->account_id ?? '') == $item->id ? 'selected':'' }}>{{ $item->name }} <small> ({{$item->phone_no ?? ''}} - {{$item->business_name ?? ''}})</small></option>
                                 @endforeach
                             </select>
                         </div>
@@ -42,8 +42,16 @@
                         <div class="col-md-12 mt-2">
                             <fieldset class="border px-md-3 p-2">
                                 <legend class="float-none w-auto">Item List</legend>
-                                <h6>Article (Barcode/Manually)</h6>
-                                <input type="text" name="selected_article" style="position: sticky; top: 12%; z-index: 999; background: #fff;" placeholder="Scan\Enter" id="selected_article" class="form-control w-75 mb-3">
+                                <div class="row" style="position: sticky;top:12%; z-index:999; background: #fff;">
+                                    <div class="col-md-6">
+                                        <h6>Article (Barcode/Manually)</h6>
+                                        <input type="text" name="selected_article" style="position: sticky; top: 12%; z-index: 999; background: #fff;" placeholder="Scan\Enter" id="selected_article" class="form-control  mb-3">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Enter Article</h6>
+                                        <input type="text" name="article_name" style="position: sticky; top: 12%; z-index: 999; background: #fff;"  id="article_name" class="form-control typeahead2"  onkeydown="return (event.keyCode!=13);" placeholder="Please Enter Article Name">
+                                    </div>
+                                </div>
                                 <div class="dt-ext table-responsive">
                                     <table class="table table-bordered" style="width:100%">
                                         <thead>
@@ -51,6 +59,7 @@
                                                 <td>#</td>
                                                 <td width="40%">Article Details</td>
                                                 <td>Amount</td>
+                                                <td>Discount</td>
                                                 <td>Quantity</td>
                                                 <td></td>
                                             </tr>
@@ -68,11 +77,12 @@
                                                    
                                                 </td>
                                                 <td> <input type="number" step="any" name="add[{{$key}}][selling_price]"  value="{{$detail->selling_price ?? $detail->item_detail->selling_price}}"  oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> </td>
+                                                <td> <input type="number" step="any" name="add[{{$key}}][discount]" value="{{$detail->discount}}" oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> </td>
                                                 <td> <input type="number" step="any" name="add[{{$key}}][quantity]" max="{{($detail->item_detail->remaining_stock  ?? 0) + $detail->quantity}}" value="{{$detail->quantity}}" oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> </td>
                                                 
                                             
                                                 <td rowspan="1">
-                                                    <a class="btn btn-danger btn-xs" onclick="remove_article()" href="javascript:void(0)">-</a>
+                                                    <a class="btn btn-danger btn-xs" onclick="remove_article($(this),{{$detail->item_detail->id}})" href="javascript:void(0)">-</a>
                                                 </td>
                                             </tr>
                                             @endforeach
@@ -81,12 +91,41 @@
                                         <tfoot>
                                             <tr>
                                                 <td colspan="2">
-                                                    <textarea class="form-control" name="remarks" id="remarks"  rows="4" placeholder="Remarks Here"></textarea>
+                                                    <textarea class="form-control mb-2" name="remarks" id="remarks"  rows="4" placeholder="Remarks Here">{{$sale->remarks ?? ''}}</textarea>
+                                                    <div class="input-group input-group-sm mb-2">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">Tax/Transport/Packing</span>
+                                                        <input type="number" step="any" name="total_tax" id="total_tax" class="form-control" oninput="recalculate_totals(0)" value="{{$sale->total_tax ?? 0}}" placeholder="Total Tax">
+                                                    </div>
+                                                    {{-- <div class="input-group input-group-sm mb-2">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">Courier</span>
+                                                        <input type="number" step="any" name="total_courier" id="total_courier" class="form-control" oninput="recalculate_totals(0)" value="{{$sale->total_courier ?? 0}}"  placeholder="Total Courier">
+                                                    </div> --}}
                                                 </td>
                                                 <td colspan="3">
-                                                    <input type="text" name="total_items" id="total_items" class="form-control mb-2" value="{{$sale->total_items ?? 0}}" readonly placeholder="Total Items">
-                                                    <input type="text" name="total_quantity" id="total_quantity" class="form-control mb-2" value="{{$sale->total_quantity ?? 0}}" readonly placeholder="Total Quantity In Pcs">
-                                                    <input type="text" name="total_sale_amount" id="total_sale_amount" class="form-control" value="{{$sale->total_sale_amount ?? 0}}" readonly placeholder="Total Amount">
+                                                    <div class="input-group input-group-sm mb-2">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">Total Items</span>
+                                                        <input type="text" name="total_items" id="total_items" class="form-control" value="{{$sale->total_items ?? 0}}" readonly placeholder="Total Items">
+                                                    </div>
+                                                    <div class="input-group input-group-sm mb-2">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">Total Quantity</span>
+                                                        <input type="text" name="total_quantity" id="total_quantity" class="form-control" value="{{$sale->total_quantity ?? 0}}" readonly placeholder="Total Quantity In Pcs">
+                                                    </div>
+                                                    <div class="input-group input-group-sm mb-2">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">Total Amount</span>
+                                                        <input type="text" name="total_sale_amount" id="total_sale_amount" class="form-control" value="{{$sale->total_sale_amount ?? 0}}" readonly placeholder="Total Amount">
+                                                    </div>
+                                                    <div class="input-group input-group-sm mb-2">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">Adjusted</span>
+                                                        <input type="number" step="any" name="adjusted_amount" id="adjusted_amount" oninput="recalculate_totals(0)" class="form-control" value="{{$sale->adjusted_amount ?? 0}}" placeholder="Adjusted Amt">
+                                                    </div>
+                                                    <div class="input-group input-group-sm mb-2">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">Discount</span>
+                                                        <input type="text" name="total_discount" id="total_discount" class="form-control" value="{{$sale->total_discount ?? 0}}" readonly placeholder="Total Amount">
+                                                    </div>
+                                                    <div class="input-group input-group-sm mb-2">
+                                                        <span class="input-group-text" id="inputGroup-sizing-default">Net Amount</span>
+                                                        <input type="text" name="total_net_amount" id="total_net_amount" class="form-control" value="{{$sale->total_net_amount ?? 0}}" readonly placeholder="Total Net Amount">
+                                                    </div>
                                                     
                                                 </td>
                                             </tr>
@@ -148,7 +187,43 @@
 </div>
 @endsection
 @section('script')
+<script src="{{ asset('assets/js/typeahead/typeahead.bundle.js') }}"></script>
+
 <script>
+    (function($) {
+        var substringMatcher = function(strs) {
+            return function findMatches(q, cb) {
+            var matches, substringRegex;
+            matches = [];
+            substrRegex = new RegExp(q, 'i');
+            $.each(strs, function(i, str) {
+                if (substrRegex.test(str)) {
+                matches.push(str);
+                }
+            });
+            cb(matches);
+            };
+        };
+        var states = @json($article_name);
+        $('.typeahead2').typeahead({
+                hint: true,
+                highlight: true,
+                minLength: 1
+            },
+            {
+                name: 'states',
+                source: substringMatcher(states)
+            }).on('typeahead:select', function(event, suggestion) {
+                $('#selected_article').val(suggestion);
+                add_article();
+            });
+           
+            var states = new Bloodhound({
+                datumTokenizer: Bloodhound.tokenizers.whitespace,
+                queryTokenizer: Bloodhound.tokenizers.whitespace,
+                local: states
+            });
+        })(jQuery);
     function add_customer(){
         $('#edit_modal').modal('show');
         var url = "{{route('account_master.edit_modal',":id")}}";
@@ -229,7 +304,7 @@
                    
                     $('#selected_article').focus();
                     $('#selected_article').val('');
-                  
+                    $('#article_name').val('');
                    
                 }
                 else{
@@ -242,10 +317,15 @@
         let totalItems = 0;
         let totalQuantity = 0;
         let totalSaleAmount = 0;
+        let totalDiscount = 0;
+        let adjustedAmount = parseFloat($('#adjusted_amount').val() || 0);
+        let totalTax = parseFloat($('#total_tax').val() || 0);
+        let totalCourier = parseFloat($('#total_courier').val() || 0);
 
         $('.item_article_row').each(function() {
             let quantity = parseFloat($(this).find('input[name*="[quantity]"]').val()) || 0;
             let sellingPrice = parseFloat($(this).find('input[name*="[selling_price]"]').val()) || 0;
+            let discount = parseFloat($(this).find('input[name*="[discount]"]').val()) || 0;
             let mutha = 0;
 
            
@@ -255,19 +335,23 @@
             totalItems += 1;
             totalQuantity += quantity;
             totalSaleAmount += (quantity * sellingPrice);
+            totalDiscount += (quantity * discount);
         });
-
+        totalDiscount += adjustedAmount;
         totalSaleAmount = totalSaleAmount.toFixed(2);
 
         $('#total_items').val(totalItems);
         $('#total_quantity').val(totalQuantity);
         $('#total_sale_amount').val(totalSaleAmount);
+        $('#total_discount').val(totalDiscount);
+        $('#total_net_amount').val(totalSaleAmount - totalDiscount + totalTax + totalCourier);
         get_pending_amount();
     }
 
-    function remove_article(){
-       
-        
+    function remove_article(e,item_detail_id){
+        e.parent().parent().remove();
+        recalculate_totals(item_detail_id);
+        reindex_articles();
     }
     function reindex_articles(){
         $('tr.item_article_row').each(function(articleIndex){
@@ -329,7 +413,7 @@
        }
    }
    function get_pending_amount(){
-        var grand_total = $('#total_sale_amount').val();
+        var grand_total = $('#total_net_amount').val();
         var total_paid = 0;
         $(".paid_amount").each(function() {
             var paid_amount = $(this).val() || 0;

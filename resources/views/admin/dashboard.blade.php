@@ -23,12 +23,17 @@
         </label>
         
     </div>
+    <div class="dataTables_filter mb-0" style="float:left !important; margin-left:10px;">
+      <button id="toggle_widget" class="btn btn-sm btn-primary">
+        Show 
+      </button>
+    </div>
     </div>
 @endsection
 
 @section('content')
 <div class="container-fluid">
-  <div class="row widget-grid" id="get_widget">
+  <div class="row widget-grid" id="get_widget" style="display:none;">
     <div class="loader-box"><div class="loader-37"></div></div>
   </div>
   <div class="row">
@@ -81,8 +86,18 @@
 @section('script')
 <script>
     $(document).ready(function(){
-          get_widget();
+          // get_widget();
           get_datatable();
+          $('#toggle_widget').click(function(){
+            $('#get_widget').toggle(); // show/hide widget section
+
+            if($('#get_widget').is(':visible')){
+                $(this).text('Hide');
+                get_widget(); // load widget data only when visible
+            } else {
+                $(this).text('Show');
+            }
+        });
     });
     $(document).on('click','#get_datatable .pages a',function(n){
         n.preventDefault();
@@ -98,11 +113,8 @@
       var page = page ?? 1;
       $.get('{{ route("dashboard.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}",from_date:from_date,to_date:to_date}, function(data){
         $('#get_datatable').html(data);
-        $('#basic-test').DataTable({
-          dom: 'Brtp',
-          pageLength: -1,
-          responsive: true,
-        });
+        $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
+        scrollCollapse: true,});
       });
     }
     function get_widget(){

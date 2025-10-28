@@ -23,10 +23,10 @@
                                 <label>Show 
                                     <select name="basic-2_value"  id="basic-2_value" aria-controls="basic-2" class="form-control form-control-sm">
                                         <option value="50">50</option>
-                                        <option value="250">250</option>
+                                        <option value="250" selected>250</option>
                                         <option value="500">500</option>
                                         <option value="1000">1000</option>
-                                    </select> entries
+                                    </select>
                                 </label>
                             </div>
                             <div class="dataTables_filter">
@@ -78,7 +78,43 @@
             var page = page ?? 1;
             $.get('{{ route("sale.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}"}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                var table = $('#basic-test').DataTable({
+            dom: 'Brt',
+            "pageLength": -1,
+            responsive: true,
+            scrollY: "50vh",
+            scrollCollapse: true,
+            buttons: [
+                { extend: 'copy', text: 'Copy' },
+                { extend: 'csv', text: 'CSV' },
+                { extend: 'excel', text: 'Excel' },
+                { extend: 'pdf', text: 'PDF' },
+                { extend: 'print', text: 'Print' },
+                {
+                    text: 'Show',  // custom button
+                    attr: { id: 'toggle_amount' },
+                    className: 'btn btn-primary',
+                    action: function (e, dt, node, config) {
+                        var column = table.column(5);
+                        var isVisible = column.visible();
+
+                        column.visible(!isVisible);
+
+                        if (isVisible) {
+                            node.text('Show');
+                            node.removeClass('btn-danger').addClass('btn-primary');
+                        } else {
+                            node.text('Hide');
+                            node.removeClass('btn-primary').addClass('btn-danger');
+                        }
+                    }
+                }
+            ]
+        });
+                table.column(5).visible(false);
+
+        // ✅ Toggle button logic
+          
             });
         }
 

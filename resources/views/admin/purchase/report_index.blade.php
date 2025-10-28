@@ -113,7 +113,8 @@
             var vendor_id = $('#vendor_id').val();
             $.get('{{ route("purchase.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}",from_date:from_date,to_date:to_date,vendor_id:vendor_id}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                  $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
+                scrollCollapse: true,});
             });
         }
 

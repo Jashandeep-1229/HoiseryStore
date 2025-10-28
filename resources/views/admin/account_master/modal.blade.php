@@ -20,6 +20,10 @@
                 <h6>Phone No</h6>
                 <input type="text" name="phone_no" value="{{$account_master->phone_no ?? ''}}" class="form-control" >
             </div>
+            <div class="col-md-12 form-group mb-3">
+                <h6>City</h6>
+                <input type="text" name="city" value="{{$account_master->city ?? ''}}" class="form-control" >
+            </div>
             @endif
 
             @if($account_master->is_editable ?? 0)

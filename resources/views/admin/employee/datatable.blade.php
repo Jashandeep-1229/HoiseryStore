@@ -11,7 +11,6 @@
         </thead>
         <tbody>
             @foreach ($users as $key => $item)
-           @if($item->role_as != 'Admin')
             <tr>
                 <td>{{ $users->firstItem() + $key }}</td>
                 <td>{{ $item->name ?? 'N/A' }} </td>
@@ -21,14 +20,13 @@
                     <a onclick="edit_modal({{$item->id}},{{$key+1}})"  class="btn btn-warning btn-sm  pointer p-1 " data-bs-toggle="modal" data-bs-target="#edit_modal"  data-toggle="tooltip" title="Edit">
                         <i class="fa fa-edit"></i>
                     </a>
-                    @if (auth()->user()->role_as == 'Admin')
+                    @if (auth()->user()->role_as == 'Admin' && auth()->user()->id != 1)
                         <a onclick="delete_user({{$item->id}})" class="btn btn-danger btn-sm  pointer p-1 " data-toggle="tooltip" title="Delete">
                             <i class="fa fa-trash-o"></i>
                         </a>
                     @endif
                 </td>
             </tr>
-            @endif
             @endforeach
 
         </tbody>

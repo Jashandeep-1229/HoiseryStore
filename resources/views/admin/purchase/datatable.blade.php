@@ -36,7 +36,7 @@
                     @endforeach
                 </td>
                 <td>
-                    Total - {{formatIndianNumber($list->total_purchase_amount ?? 0)}} <br>
+                    Total - <span class="text-danger">{{formatIndianNumber($list->total_purchase_amount ?? 0)}} </span><br>
                     
                 </td>
                 <td>

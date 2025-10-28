@@ -18,12 +18,16 @@
               
                 <div class="card">
                     <div class="card-header d-flex justify-content-between">
-                        <h5 class="card-title">All Remaining Stock</h5>
-                        <h5 class="card-title text-primary">Grand Total - {{formatIndianNumber($grand_total_stock)}} Pcs</h5>
-                        <h5 class="card-title text-info">
-                            Total Purchase - ₹ {{ formatIndianNumber($totals->total_purchase_amount, 2, '.', ',') }}
-                        </h5>
-                        <h5 class="card-title text-success">Total Sale - {{formatIndianNumber($totals->total_sale_amount)}}</h5>
+                        <h5 class="card-title">All Remaining Stock <a data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample"><i class="fa fa-eye"></i></a></h5>
+                            <div class="collapse" id="collapseExample">
+                                <div class="d-flex gap-4">
+                                    <h5 class="card-title text-primary">Grand Total - {{formatIndianNumber($grand_total_stock)}} Pcs</h5>
+                                    <h5 class="card-title text-info">
+                                        Total Purchase - ₹ {{ formatIndianNumber($totals->total_purchase_amount, 2, '.', ',') }}
+                                    </h5>
+                                    <h5 class="card-title text-success">Total Sale - {{formatIndianNumber($totals->total_sale_amount)}}</h5>
+                                </div>
+                            </div>
                     </div>
                     <div class="card-body">
                         <div  id="basic-2_wrapper" class="dataTables_wrapper px-2" onchange="get_datatable()">
@@ -124,7 +128,8 @@
             var page = page ?? 1;
             $.get('{{ route("average_stock.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}",brand_id:brand_id,category_id:category_id,season_id:season_id}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                  $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
+                scrollCollapse: true,});
             });
         }
         

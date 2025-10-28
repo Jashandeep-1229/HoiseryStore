@@ -13,7 +13,16 @@
         </thead>
         <tbody>
             @foreach ($manage_stock as $key => $item)
-            <tr style="background-color:{{$item->in_out == 'Out' ? '#ffe5e5':''}}">
+            @php
+                if($item->in_out == 'Out'){
+                    $color = '#ffe5e5';
+                }else if($item->in_out == 'In'){
+                    $color = '#e5ffe8';
+                }else{
+                    $color = '';
+                }
+            @endphp
+            <tr style="background-color:{{$color}}">
                 <td>{{ $manage_stock->firstItem() + $key }}</td>
                 <td>{{ date('d M,Y',strtotime($item->date)) ?? 'N/A' }}</td>
                 <td>{{ $item->brand->name ?? 'N/A' }} <small>({{$item->category->name ?? ''}})</small></td>

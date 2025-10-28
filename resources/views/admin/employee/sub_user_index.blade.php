@@ -57,7 +57,7 @@
                                 <label>Show 
                                     <select name="basic-2_value"  id="basic-2_value" aria-controls="basic-2" class="form-control form-control-sm">
                                         <option value="50">50</option>
-                                        <option value="250">250</option>
+                                        <option value="250" selected>250</option>
                                         <option value="500">500</option>
                                         <option value="1000">1000</option>
                                     </select> entries
@@ -130,7 +130,8 @@
             url = url.replace(':id',{{$user->id}});
             $.get(url, { _token: "{{csrf_token() }}",page:page,value:value,search:search}, function(data){
                 $('#get_datatable').html(data);
-                $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true,});
+                  $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
+                scrollCollapse: true,});
             });
         }
 

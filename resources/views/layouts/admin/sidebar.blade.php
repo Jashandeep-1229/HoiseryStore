@@ -1,6 +1,6 @@
 <div class="sidebar-wrapper" sidebar-layout="stroke-svg">
   <div>
-    <div class="logo-wrapper" style="height: auto; width:200px;"><a href="{{ url('/') }}"><img class="img-fluid for-light" src="{{ asset(env('APP_LOGO_DARK')) }}" alt=""><img class="img-fluid for-dark" src="{{ asset(env('APP_LOGO_LIGHT')) }}" alt=""></a>
+    <div class="logo-wrapper" style="height: auto; width:200px;"><a href="{{ url('/') }}"><img class="img-fluid for-light w-50" src="{{ asset(env('APP_LOGO_DARK')) }}" alt=""><img class="img-fluid for-dark w-50" src="{{ asset(env('APP_LOGO_LIGHT')) }}" alt=""></a>
       <div class="back-btn"><i class="fa fa-angle-left"></i></div>
       <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle" data-feather="grid"> </i></div>
     </div>
@@ -116,6 +116,16 @@
           </li>
           @endif
           @if(auth()->user()->role_as === 'Admin')
+          <li class="sidebar-main-title">
+            <div>
+              <h6>Marketing</h6>
+            </div>
+          </li>
+          <li class="sidebar-list">
+            <a class="sidebar-link sidebar-title link-nav {{Route::is('marketing.index') ? 'active' : ''}}" href="{{ route('marketing.index') }}">
+              <i data-feather="minus-circle"></i><span>Manage Marketing</span>
+            </a>
+          </li>
           <li class="sidebar-main-title">
             <div>
               <h6>Expense / Income</h6>

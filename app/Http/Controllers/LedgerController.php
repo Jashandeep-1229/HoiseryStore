@@ -255,9 +255,23 @@ class LedgerController extends Controller
         $vendorPayments = Ledger::select(
             'account_id',
             \DB::raw("SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) as total_cr"),
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Payment To Vendor%' THEN amount ELSE 0 END) as total_dr"),
-            \DB::raw("(SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
-                    SUM(CASE WHEN `from` LIKE 'Payment To Vendor%' THEN amount ELSE 0 END)) as due")
+            \DB::raw("
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment To Vendor%' 
+                      OR `from` LIKE 'Manually - Vendor%' 
+                    THEN amount 
+                    ELSE 0 
+                END) as total_dr
+            "),
+            \DB::raw("(
+                SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment To Vendor%' 
+                      OR `from` LIKE 'Manually - Vendor%' 
+                    THEN amount 
+                    ELSE 0 
+                END)
+            ) as due")
         )
         ->groupBy('account_id')
         ->get();
@@ -265,9 +279,23 @@ class LedgerController extends Controller
         // --- Vendor Payments (overall total only) ---
         $totalVendor = Ledger::select(
             \DB::raw("SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) as total_cr"),
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Payment To Vendor%' THEN amount ELSE 0 END) as total_dr"),
-            \DB::raw("(SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
-                    SUM(CASE WHEN `from` LIKE 'Payment To Vendor%' THEN amount ELSE 0 END)) as due")
+            \DB::raw("
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment To Vendor%' 
+                    OR `from` LIKE 'Manually - Vendor%' 
+                    THEN amount 
+                    ELSE 0 
+                END) as total_dr
+            "),
+            \DB::raw("(
+                SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment To Vendor%' 
+                    OR `from` LIKE 'Manually - Vendor%' 
+                    THEN amount 
+                    ELSE 0 
+                END)
+        ) as due")
         )
         ->first();
 
@@ -276,9 +304,23 @@ class LedgerController extends Controller
         $customerPayments = Ledger::select(
             'account_id',
             \DB::raw("SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) as total_dr"),
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Payment Recd From Customer%' THEN amount ELSE 0 END) as total_cr"),
-            \DB::raw("(SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
-                    SUM(CASE WHEN `from` LIKE 'Payment Recd From Customer%' THEN amount ELSE 0 END)) as pending")
+            \DB::raw("
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment Recd From Customer%' 
+                      OR `from` LIKE 'Manually - Customer%' 
+                    THEN amount 
+                    ELSE 0 
+                END) as total_cr
+            "),
+            \DB::raw("(
+                SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment Recd From Customer%' 
+                      OR `from` LIKE 'Manually - Customer%' 
+                    THEN amount 
+                    ELSE 0 
+                END)
+            ) as pending")
         )
         ->groupBy('account_id')
         ->get();
@@ -286,9 +328,23 @@ class LedgerController extends Controller
         // --- Customer Payments (overall total only) ---
         $totalCustomer = Ledger::select(
             \DB::raw("SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) as total_dr"),
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Payment Recd From Customer%' THEN amount ELSE 0 END) as total_cr"),
-            \DB::raw("(SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
-                    SUM(CASE WHEN `from` LIKE 'Payment Recd From Customer%' THEN amount ELSE 0 END)) as pending")
+            \DB::raw("
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment Recd From Customer%' 
+                      OR `from` LIKE 'Manually - Customer%' 
+                    THEN amount 
+                    ELSE 0 
+                END) as total_cr
+            "),
+            \DB::raw("(
+                SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment Recd From Customer%' 
+                      OR `from` LIKE 'Manually - Customer%' 
+                    THEN amount 
+                    ELSE 0 
+                END)
+            ) as pending")
         )
         ->first();
 
@@ -323,7 +379,7 @@ class LedgerController extends Controller
             // Skip profit if purchase_price is null
             $profit = 0;
             if ($purchase_price !== null) {
-                $profit = ($selling_price - $purchase_price) * $stock->quantity;
+                $profit = ($selling_price - $purchase_price) * $stock->quantity - ($stock->discount * $stock->quantity);
             }
 
             $stock->calculated_profit = $profit;
@@ -345,7 +401,7 @@ class LedgerController extends Controller
                 return 0; // skip
             }
 
-            return ($selling_price - $purchase_price) * $stock->quantity;
+            return ($selling_price - $purchase_price) * $stock->quantity - ($stock->discount * $stock->quantity);
         });
 
     // Total Purchase (all IN entries)
@@ -369,7 +425,7 @@ class LedgerController extends Controller
         ->get()
         ->sum(function ($stock) {
             $selling_price = $stock->selling_price ?? $stock->item_detail->selling_price;
-            return $selling_price * $stock->quantity;
+            return $selling_price * $stock->quantity - ($stock->discount * $stock->quantity);
         });
 
 
@@ -377,8 +433,8 @@ class LedgerController extends Controller
     }
 
     public function datatable(Request $request){
+        $title = $request->from;
         if($request->from != 'History'){ 
-            $title = $request->from;
             $query = AccountMaster::where('from',$title);
             if($request->search){
                 $query->where('name','like','%'.$request->search.'%');
@@ -407,11 +463,11 @@ class LedgerController extends Controller
             
                 return $account;
             });
-            return view('admin.ledger.datatable',compact('ledger'));
+            return view('admin.ledger.datatable',compact('ledger','title'));
         }
         else{
             $account = AccountMaster::findOrFail($request->account_id);
-
+            $title = $account->from;
             $query = Ledger::where('account_id', $account->id)
                 ->when($request->search, fn($q) => $q->where('remarks', 'like', '%' . $request->search . '%'))
                 ->when($request->from_date, fn($q) => $q->where('date', '>=', $request->from_date))
@@ -429,7 +485,7 @@ class LedgerController extends Controller
                 : $totals->total_dr - $totals->total_cr; // Debit nature
 
             $ledger = $query->orderBy('date', 'desc')->paginate($request->value ?? 50);
-            return view('admin.ledger.show_datatable',compact('ledger','totals'));
+            return view('admin.ledger.show_datatable',compact('ledger','totals','title'));
         }
       
     }
@@ -453,12 +509,14 @@ class LedgerController extends Controller
     public function store(Request $request)
     {
         $ledger = Ledger::find($request->id);
+        $account_master = AccountMaster::find($request->account_id);
         if(!$ledger){
             $ledger = new Ledger;
             $ledger->user_id = auth()->user()->id;
-            $ledger->from = 'Manually';
+          
             $ledger->from_id = 0;
         }
+        $ledger->from = 'Manually - '.$account_master->from;
         $ledger->account_id = $request->account_id;
         $ledger->payment_method_id = $request->payment_method_id;
         $ledger->date = $request->date;

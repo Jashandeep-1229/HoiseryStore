@@ -4,8 +4,13 @@
             <tr>
                 <th class="all">#</th>
                 <th class="all">Date</th>
-                <th class="all">Credit/Out</th>
-                <th class="all">Debit/In</th>
+                @if($title == 'Vendor')
+                <th class="all">Payment Due</th>
+                <th class="all">Payment Paid</th>
+                @elseif($title == 'Customer')
+                <th class="all">Payment Received</th>
+                <th class="all">Total Sale</th>
+                @endif
                 <th class="all">Payment Method</th>
                 <th class="all">Balance</th>
                 <th class="all">Remarks</th>
@@ -85,7 +90,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td>{{$totals->remaining ?? 0}}</td>
+                <td>{{formatIndianNumber($totals->remaining ?? 0)}}</td>
                 <td></td>
                 <td></td>
             </tr>

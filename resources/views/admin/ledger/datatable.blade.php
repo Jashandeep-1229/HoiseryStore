@@ -4,26 +4,50 @@
             <tr>
                 <th class="all">#</th>
                 <th class="all">Name</th>
-                <th class="all">Credit/Out</th>
-                <th class="all">Debit/In</th>
+                @if($title == 'Vendor')
+                <th class="all">Payment Due</th>
+                <th class="all">Payment Paid</th>
+                @elseif($title == 'Customer')
+                <th class="all">Payment Received</th>
+                <th class="all">Total Sale</th>
+                @endif
                 <th class="all">Pending</th>
                 <th class="all">Action</th>
             </tr>
         </thead>
         <tbody>
+            @php 
+                $total_1 = 0;
+                $total_2 = 0;
+                $total_3 = 0;
+            @endphp
             @foreach ($ledger as $key => $list)
+            @php
+                $total_1 += $list->total_cr;
+                $total_2 += $list->total_dr;
+                $total_3 += $list->remaining;
+            @endphp
             <tr>
                 <td>{{ $ledger->firstItem() + $key }}</td>
                
                 <td>
                    {{$list->name ?? ''}}
                 </td>
-                <td>
+                @if($title == 'Vendor')
+                <td class="text-danger">
                     {{formatIndianNumber($list->total_cr) ?? ''}}
                 </td>
-                <td>
+                <td class="text-success">
                     {{formatIndianNumber($list->total_dr) ?? ''}}
                 </td>
+                @elseif($title == 'Customer')
+                <td class="text-success">
+                    {{formatIndianNumber($list->total_cr) ?? ''}}
+                </td>
+                <td class="text-danger">
+                    {{formatIndianNumber($list->total_dr) ?? ''}}
+                </td>
+                @endif
                 
                 <td>
                     {{formatIndianNumber($list->remaining) ?? ''}}
@@ -42,6 +66,16 @@
             @endforeach
 
         </tbody>
+        <tfoot>
+            <tr>
+                <th></th>
+                <th></th>
+                <th>{{formatIndianNumber($total_1)}}</th>
+                <th>{{formatIndianNumber($total_2)}}</th>
+                <th>{{formatIndianNumber($total_3)}}</th>
+                <th></th>
+            </tr>
+        </tfoot>
     </table>
 </div>
 <div class="mt-2">

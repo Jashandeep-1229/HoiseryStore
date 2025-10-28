@@ -23,29 +23,39 @@
                         <div class="col-md-4">
                             <div class="form-group">
                                 <h6>Select Brand<span>*</span> <span class="badge badge-success text-white p-1" onclick="add_brand()"><i class="fa fa-plus"></i></span></h6>
-                                <select class="form-control js-example-basic-single mb-2"  name="brand_id" id="brand_id" required>
+                                @if(($item->id ?? 0) == 0)
+                                <select class="form-control js-example-basic-single mb-2"  name="brand_id" id="brand_id" required >
                                     <option selected disabled value="">Select brand</option>
                                     @foreach($brand as $br)
                                     <option value="{{$br->id}}" {{ ($item->brand_id ?? 0) == $br->id ? 'selected':''  }}>{{$br->name}}</option>
                                     @endforeach
                                 </select>
+                                @else
+                                <input type="hidden" name="brand_id" class="form-control" value="{{$item->brand_id}}">
+                                <input type="text" class="form-control" readonly  value="{{$item->brand->name ?? ''}}">
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <h6>Select Category<span>*</span> <span class="badge badge-success text-white p-1" onclick="add_category()"><i class="fa fa-plus"></i></span></h6>
-                                <select class="form-control js-example-basic-single mb-2"  name="category_id" id="category_id" required>
+                                @if(($item->id ?? 0) == 0)
+                                <select class="form-control js-example-basic-single mb-2"  name="category_id" id="category_id" required >
                                     <option selected disabled value="">Select Category</option>
                                     @foreach($category as $cat)
                                     <option value="{{$cat->id}}" {{ ($item->category_id ?? 0) == $cat->id ? 'selected':''  }}>{{$cat->name}}</option>
                                     @endforeach
                                 </select>
+                                @else
+                                <input type="hidden" name="category_id" class="form-control" value="{{$item->category_id}}">
+                                <input type="text" class="form-control" readonly  value="{{$item->category->name ?? ''}}">
+                                @endif
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
                                 <h6>Select Season<span>*</span></h6>
-                                <select class="form-control js-example-basic-single mb-2"  name="season_id" id="season_id" required>
+                                <select class="form-control js-example-basic-single mb-2"  name="season_id" id="season_id" required >
                                     <option selected disabled value="">Select Season</option>
                                     @foreach($season as $sea)
                                     <option value="{{$sea->id}}" {{ ($item->season_id ?? 0) == $sea->id ? 'selected':''  }}>{{$sea->name}}</option>
@@ -72,8 +82,8 @@
                             <div class="form-group">
                                 <h6>Enter Article No<span>*</span></h6>
                                 <div class="input-group ">
-                                    <span class="input-group-text" id="number_format">{{$number_format + 1}}</span>
-                                    <input class="form-control form-control-sm" type="text" name="article_no" id="article_no" value="{{ old('article_no') }}"  placeholder="Enter Article No">
+                                    <span class="input-group-text" id="number_format"></span>
+                                    <input class="form-control form-control-sm" type="text" name="article_no" id="article_no" value="{{ old('article_no') }}"  placeholder="Enter Article No - {{$number_format}}">
                                 </div>
                                 {{-- <input type="text" name="article_no" id="article_no" value="{{ old('article_no') }}" class="form-control"> --}}
 

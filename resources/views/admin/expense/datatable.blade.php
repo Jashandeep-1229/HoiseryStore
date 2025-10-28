@@ -18,7 +18,7 @@
                 <td>{{ date('d M,Y',strtotime($item->date)) }}</td>
                 <td>{{ $item->account->name ?? 'N/A' }}</td>
                 <td>{{ $item->remarks ?? '' }}</td>
-                <td>{{ $item->amount ?? '' }}</td>
+                <td class="text-danger">{{ formatIndianNumber($item->amount) ?? '' }}</td>
                 <td>{{ $item->payment_method->name ?? '' }}</td>
                 
                 <td>

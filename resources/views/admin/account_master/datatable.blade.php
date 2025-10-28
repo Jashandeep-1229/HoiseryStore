@@ -6,6 +6,7 @@
                 <th class="all">Name</th>
                 <th class="all">Business Name</th>
                 <th class="all">Phone</th>
+                <th class="all">City</th>
                 <th class="all">From</th>
                 <th class="all">Status</th>
                 <th class="all">Action</th>
@@ -18,6 +19,7 @@
                 <td>{{ $item->name ?? 'N/A' }}</td>
                 <td>{{ $item->business_name ?? 'N/A' }}</td>
                 <td>{{ $item->phone_no ?? 'N/A' }}</td>
+                <td>{{ $item->city ?? 'N/A' }}</td>
                 <td>{{ $item->from ?? 'N/A' }}</td>
                 <td>
                     <div class="media-body text-start ">

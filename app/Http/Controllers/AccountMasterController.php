@@ -66,6 +66,7 @@ class AccountMasterController extends Controller
                 $account_master->name = $request->name;
                 $account_master->phone_no = $request->phone_no;
                 $account_master->business_name = $request->business_name;
+                $account_master->city = $request->city;
                 $account_master->from = $request->from;
                 $account_master->save();
                 $data = [
@@ -93,6 +94,7 @@ class AccountMasterController extends Controller
                 $account_master->name = $request->name;
                 $account_master->phone_no = $request->phone_no;
                 $account_master->business_name = $request->business_name;
+                $account_master->city = $request->city;
                 $account_master->from = $request->from ?? 'Vendor';
                 $account_master->status = 1;
                 $account_master->save();

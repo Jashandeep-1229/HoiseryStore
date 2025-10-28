@@ -16,6 +16,7 @@ use App\Http\Controllers\AccountMasterController;
 use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PurchaseOrderController;
+use App\Http\Controllers\MarketingController;
 
 
 /*
@@ -158,6 +159,14 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('user/change_status/{id}', [EmployeeController::class, 'change_status'])->name('user.change_status');
         Route::get('sub_user/index/{id}',[EmployeeController::class,'sub_user_index'])->name('sub_user.index');
         Route::get('sub_user/datatable/{id}',[EmployeeController::class,'sub_user_datatable'])->name('sub_user.datatable');
+
+        Route::resource('marketing',MarketingController::class);
+        Route::get('marketings/datatable',[MarketingController::class,'datatable'])->name('marketing.datatable');
+        Route::get('marketings/edit_modal/{id}',[MarketingController::class,'edit_modal'])->name('marketing.edit_modal');
+        Route::get('marketings/delete/{id}',[MarketingController::class,'delete'])->name('marketing.delete');
+        Route::get('marketings/change_status/{id}',[MarketingController::class,'change_status'])->name('marketing.change_status');
+        Route::get('marketings/send_whatsapp/{id}',[MarketingController::class,'send_whatsapp'])->name('marketing.send_whatsapp');
+        
     });
 });
 

@@ -41,9 +41,23 @@ class DashboardController extends Controller
         $vendorPayments = Ledger::select(
             'account_id',
             \DB::raw("SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) as total_cr"),
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Payment To Vendor%' THEN amount ELSE 0 END) as total_dr"),
-            \DB::raw("(SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
-                    SUM(CASE WHEN `from` LIKE 'Payment To Vendor%' THEN amount ELSE 0 END)) as due")
+            \DB::raw("
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment To Vendor%' 
+                      OR `from` LIKE 'Manually - Vendor%' 
+                    THEN amount 
+                    ELSE 0 
+                END) as total_dr
+            "),
+            \DB::raw("(
+                SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment To Vendor%' 
+                      OR `from` LIKE 'Manually - Vendor%' 
+                    THEN amount 
+                    ELSE 0 
+                END)
+            ) as due")
         )
         ->groupBy('account_id')
         ->get();
@@ -51,20 +65,47 @@ class DashboardController extends Controller
         // --- Vendor Payments (overall total only) ---
         $totalVendor = Ledger::select(
             \DB::raw("SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) as total_cr"),
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Payment To Vendor%' THEN amount ELSE 0 END) as total_dr"),
-            \DB::raw("(SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
-                    SUM(CASE WHEN `from` LIKE 'Payment To Vendor%' THEN amount ELSE 0 END)) as due")
-        )
-        ->first();
+            \DB::raw("
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment To Vendor%' 
+                      OR `from` LIKE 'Manually - Vendor%' 
+                    THEN amount 
+                    ELSE 0 
+                END) as total_dr
+            "),
+            \DB::raw("(
+                SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment To Vendor%' 
+                      OR `from` LIKE 'Manually - Vendor%' 
+                    THEN amount 
+                    ELSE 0 
+                END)
+            ) as due")
+        )->first();
 
 
         // --- Customer Payments (per account) ---
         $customerPayments = Ledger::select(
             'account_id',
             \DB::raw("SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) as total_dr"),
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Payment Recd From Customer%' THEN amount ELSE 0 END) as total_cr"),
-            \DB::raw("(SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
-                    SUM(CASE WHEN `from` LIKE 'Payment Recd From Customer%' THEN amount ELSE 0 END)) as pending")
+            \DB::raw("
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment Recd From Customer%' 
+                    OR `from` LIKE 'Manually - Customer%' 
+                    THEN amount 
+                    ELSE 0 
+                END) as total_cr
+            "),
+            \DB::raw("(
+                SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment Recd From Customer%' 
+                      OR `from` LIKE 'Manually - Customer%' 
+                    THEN amount 
+                    ELSE 0 
+                END)
+            ) as pending")
         )
         ->groupBy('account_id')
         ->get();
@@ -72,11 +113,24 @@ class DashboardController extends Controller
         // --- Customer Payments (overall total only) ---
         $totalCustomer = Ledger::select(
             \DB::raw("SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) as total_dr"),
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Payment Recd From Customer%' THEN amount ELSE 0 END) as total_cr"),
-            \DB::raw("(SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
-                    SUM(CASE WHEN `from` LIKE 'Payment Recd From Customer%' THEN amount ELSE 0 END)) as pending")
-        )
-        ->first();
+            \DB::raw("
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment Recd From Customer%' 
+                      OR `from` LIKE 'Manually - Customer%' 
+                    THEN amount 
+                    ELSE 0 
+                END) as total_cr
+            "),
+            \DB::raw("(
+                SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
+                SUM(CASE 
+                    WHEN `from` LIKE 'Payment Recd From Customer%' 
+                      OR `from` LIKE 'Manually - Customer%' 
+                    THEN amount 
+                    ELSE 0 
+                END)
+            ) as pending")
+        )->first();
 
        
         $totals = [
@@ -109,7 +163,7 @@ class DashboardController extends Controller
             // Skip profit if purchase_price is null
             $profit = 0;
             if ($purchase_price !== null) {
-                $profit = ($selling_price - $purchase_price) * $stock->quantity;
+                $profit = ($selling_price - $purchase_price) * $stock->quantity - ($stock->discount * $stock->quantity);
             }
 
             $stock->calculated_profit = $profit;
@@ -131,7 +185,7 @@ class DashboardController extends Controller
                 return 0; // skip
             }
 
-            return ($selling_price - $purchase_price) * $stock->quantity;
+            return ($selling_price - $purchase_price) * $stock->quantity - ($stock->discount * $stock->quantity);
         });
 
     // Total Purchase (all IN entries)
@@ -155,7 +209,7 @@ class DashboardController extends Controller
         ->get()
         ->sum(function ($stock) {
             $selling_price = $stock->selling_price ?? $stock->item_detail->selling_price;
-            return $selling_price * $stock->quantity;
+            return $selling_price * $stock->quantity - ($stock->discount * $stock->quantity);
         });
 
 
