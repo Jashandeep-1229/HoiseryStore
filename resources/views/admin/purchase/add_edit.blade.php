@@ -145,11 +145,11 @@
                                                     <small>{{$detail->article_name ?? ''}}</small><br>
                                                     <small>{{$detail->size ?? ''}}</small>
                                                 </td>
-                                                <td> <input type="text" name="add[{{$key}}][purchase_price]" value="{{$detail->purchase_price}}" class="form-control form-control-sm"> </td>
-                                                <td> <input type="text" name="add[{{$key}}][selling_price]" value="{{$detail->selling_price}}" class="form-control form-control-sm"> </td>
-                                                <td> <input type="text" name="add[{{$key}}][quantity]" value="{{$detail->quantity}}" oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> </td>
+                                                <td> <input type="number" step="any" name="add[{{$key}}][purchase_price]" value="{{$detail->purchase_price}}"  oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> </td>
+                                                <td> <input type="number" step="any" name="add[{{$key}}][selling_price]" value="{{$detail->selling_price}}"  oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> </td>
+                                                <td> <input type="number" step="any" name="add[{{$key}}][quantity]" value="{{$detail->quantity}}" oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> </td>
                                                 <td> 
-                                                    <input type="text" name="add[{{$key}}][opening_stock]" value="{{$detail->opening_stock}}"  oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> 
+                                                    <input type="number" step="any" name="add[{{$key}}][opening_stock]" value="{{$detail->opening_stock}}"  oninput="recalculate_totals({{ $detail->id }})" class="form-control form-control-sm"> 
                                                     <span class="f-12"> Bundle: <span class="mutha_text">@if($detail->quantity > 0){{ round($detail->opening_stock / $detail->quantity, 2)}}@else{{0}}@endif</span></span>
                                                     <input type="hidden" name="add[{{$key}}][mutha]"  value="@if($detail->quantity > 0){{ round($detail->opening_stock / $detail->quantity, 2)}}@else{{0}}@endif" class="mutha_input">
                                                 </td>

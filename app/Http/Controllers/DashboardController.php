@@ -15,7 +15,7 @@ class DashboardController extends Controller
     }
 
     public function datatable(Request $request){
-        $querry = SaleOrder::query();
+        $querry = SaleOrder::with(['account', 'details.item_detail']);
         if($request->search){
             $querry->where('sale_no','like','%'.$request->search.'%');
         }
@@ -31,12 +31,12 @@ class DashboardController extends Controller
 
     public function get_wdiget(Request $request){
         $querry = Ledger::query();
-        if($request->from_date){
-            $querry->where('date','>=',$request->from_date);
-        }
-        if($request->to_date){
-            $querry->where('date','<=',$request->to_date);
-        }
+        // if($request->from_date){
+        //     $querry->where('date','>=',$request->from_date);
+        // }
+        // if($request->to_date){
+        //     $querry->where('date','<=',$request->to_date);
+        // }
        // --- Vendor Payments (per account) ---
         $vendorPayments = Ledger::select(
             'account_id',
@@ -64,25 +64,47 @@ class DashboardController extends Controller
 
         // --- Vendor Payments (overall total only) ---
         $totalVendor = Ledger::select(
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) as total_cr"),
+            // Credit: vendor payable increases
             \DB::raw("
                 SUM(CASE 
-                    WHEN `from` LIKE 'Payment To Vendor%' 
-                      OR `from` LIKE 'Manually - Vendor%' 
+                    WHEN (`from` LIKE 'Purchase Vendor%' AND dr_cr = 'Cr')
+                      OR (`from` LIKE 'Manually - Vendor%' AND dr_cr = 'Cr')
+                      OR (`from` LIKE 'Add More Stock' AND dr_cr = 'Cr')
+                    THEN amount 
+                    ELSE 0 
+                END) as total_cr
+            "),
+        
+            // Debit: vendor payable decreases (payment made)
+            \DB::raw("
+                SUM(CASE 
+                    WHEN (`from` LIKE 'Payment To Vendor%' AND dr_cr = 'Dr')
+                      OR (`from` LIKE 'Manually - Vendor%' AND dr_cr = 'Dr')
                     THEN amount 
                     ELSE 0 
                 END) as total_dr
             "),
-            \DB::raw("(
-                SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
-                SUM(CASE 
-                    WHEN `from` LIKE 'Payment To Vendor%' 
-                      OR `from` LIKE 'Manually - Vendor%' 
-                    THEN amount 
-                    ELSE 0 
-                END)
-            ) as due")
+        
+            // Remaining due = Cr - Dr
+            \DB::raw("
+                (
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Purchase Vendor%' AND dr_cr = 'Cr')
+                          OR (`from` LIKE 'Manually - Vendor%' AND dr_cr = 'Cr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                    -
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Payment To Vendor%' AND dr_cr = 'Dr')
+                          OR (`from` LIKE 'Manually - Vendor%' AND dr_cr = 'Dr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                ) as due
+            ")
         )->first();
+        
 
 
         // --- Customer Payments (per account) ---
@@ -112,37 +134,75 @@ class DashboardController extends Controller
 
         // --- Customer Payments (overall total only) ---
         $totalCustomer = Ledger::select(
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) as total_dr"),
+            // Debit: you are owed money (sale or manual Dr)
             \DB::raw("
                 SUM(CASE 
-                    WHEN `from` LIKE 'Payment Recd From Customer%' 
-                      OR `from` LIKE 'Manually - Customer%' 
+                    WHEN (`from` LIKE 'Sale Customer%' AND dr_cr = 'Dr')
+                      OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Dr')
+                    THEN amount 
+                    ELSE 0 
+                END) as total_dr
+            "),
+        
+            // Credit: you received money (payment or manual Cr)
+            \DB::raw("
+                SUM(CASE 
+                    WHEN (`from` LIKE 'Payment Recd From Customer%' AND dr_cr = 'Cr')
+                      OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Cr')
                     THEN amount 
                     ELSE 0 
                 END) as total_cr
             "),
-            \DB::raw("(
-                SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
-                SUM(CASE 
-                    WHEN `from` LIKE 'Payment Recd From Customer%' 
-                      OR `from` LIKE 'Manually - Customer%' 
-                    THEN amount 
-                    ELSE 0 
-                END)
-            ) as pending")
+        
+            // Pending = Dr - Cr
+            \DB::raw("
+                (
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Sale Customer%' AND dr_cr = 'Dr')
+                          OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Dr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                    -
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Payment Recd From Customer%' AND dr_cr = 'Cr')
+                          OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Cr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                ) as pending
+            ")
         )->first();
-
+        
        
         $totals = [
             'expense' => (clone $querry)->where('from', 'Expense - Manually')->sum('amount'),
             'income' => (clone $querry)->where('from', 'Income - Manually')->sum('amount'),
-            'purchase' => (clone $querry)->where('from', 'Purchase Vendor')->sum('amount'),
+            'purchase' => (clone $querry)
+            ->where(function ($q) {
+                $q->where('from', 'like', 'Purchase Vendor%')
+                  ->orWhere('from', 'like', 'Add More Stock');
+            })
+            ->where('dr_cr','Cr')
+            ->sum('amount'),
             'sale' => (clone $querry)->where('from', 'Sale Customer')->sum('amount'),
-            'payment' => (clone $querry)->where('from', 'like', 'Payment To Vendor%')->sum('amount'),
-            'received' => (clone $querry)->where('from', 'like', 'Payment Recd From Customer%')->sum('amount'),
+            'payment' => (clone $querry)
+            ->where(function ($q) {
+                $q->where('from', 'like', 'Payment To Vendor%')
+                  ->orWhere('from', 'like', 'Manually - Vendor%');
+            })
+            ->where('dr_cr','Dr')
+            ->sum('amount'),
+            'received' => (clone $querry)
+            ->where(function ($q) {
+                $q->where('from', 'like', 'Payment Recd From Customer%')
+                  ->orWhere('from', 'like', 'Manually - Customer%');
+            })
+            ->where('dr_cr','Cr')
+            ->sum('amount'),
         ];
         // Base query with filters
-        $query = ManageStock::with('item_detail')
+        $query = ManageStock::with(['item_detail', 'brand', 'category'])
         ->when($request->from_date, function ($q) use ($request) {
             $q->whereDate('manage_stocks.date', '>=', $request->from_date);
         })
@@ -215,6 +275,30 @@ class DashboardController extends Controller
 
         return view('admin.widget',compact('querry','totals','manage_stock','total_profit','total_purchase','total_sale','vendorPayments','customerPayments','totalVendor','totalCustomer'));
     }
+   public function verifyWhatsappWebhook(Request $request)
+{
+    
+    $verify_token = 'HoiseryStockToken'; // same as you entered in Facebook developer settings
+
+    $mode = $request->get('hub_mode');
+    $token = $request->get('hub_verify_token');
+    $challenge = $request->get('hub_challenge');
+
+    if ($mode === 'subscribe' && $token === $verify_token) {
+        return response($challenge, 200);
+    } else {
+        return response('Forbidden', 403);
+    }
+}
+public function whatsapp_webhook(Request $request)
+{
+    // Handle incoming WhatsApp messages here
+   \Log::info("---- WHATSAPP WEBHOOK START ----");
+    \Log::info(json_encode($request->all(), JSON_PRETTY_PRINT));
+    \Log::info("---- WHATSAPP WEBHOOK END ----");
+
+    return response('EVENT_RECEIVED', 200);
+}
 
    
 }

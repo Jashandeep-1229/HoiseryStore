@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\MarketingController;
+use App\Http\Controllers\Auth\LoginController;
 
 
 /*
@@ -29,7 +30,13 @@ use App\Http\Controllers\MarketingController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('whatsapp/webhook2', [DashboardController::class, 'verifyWhatsappWebhook']);
+Route::post('whatsapp/webhook2', [DashboardController::class, 'whatsapp_webhook']);
 Route::get('/', [HomeController::class, 'login'])->name('new_login');
+Route::get('verify_otp',[LoginController::class,'verify_otp'])->name('users.verify_otp');
+Route::get('check_otp',[LoginController::class,'check_otp'])->name('users.check_otp');
+
 
 Auth::routes();
 
@@ -141,6 +148,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('sales/add_item',[SaleOrderController::class,'add_item'])->name('sale.add_item');
         Route::get('sales/pos/{id}',[SaleOrderController::class,'pos'])->name('sale.pos');
         Route::get('sales/report',[SaleOrderController::class,'report_index'])->name('sale.report');
+        Route::get('sales/get_balance',[SaleOrderController::class,'get_balance'])->name('sale.get_balance');
 
         Route::get('transaction/report',[LedgerController::class,'transaction_index'])->name('transaction.report');
         Route::get('transaction/report/datatable',[LedgerController::class,'transaction_datatable'])->name('transaction.report.datatable');
@@ -159,6 +167,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('user/change_status/{id}', [EmployeeController::class, 'change_status'])->name('user.change_status');
         Route::get('sub_user/index/{id}',[EmployeeController::class,'sub_user_index'])->name('sub_user.index');
         Route::get('sub_user/datatable/{id}',[EmployeeController::class,'sub_user_datatable'])->name('sub_user.datatable');
+        Route::get('resend_otp',[EmployeeController::class,'resend_otp'])->name('resend_otp');
 
         Route::resource('marketing',MarketingController::class);
         Route::get('marketings/datatable',[MarketingController::class,'datatable'])->name('marketing.datatable');
@@ -166,6 +175,12 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('marketings/delete/{id}',[MarketingController::class,'delete'])->name('marketing.delete');
         Route::get('marketings/change_status/{id}',[MarketingController::class,'change_status'])->name('marketing.change_status');
         Route::get('marketings/send_whatsapp/{id}',[MarketingController::class,'send_whatsapp'])->name('marketing.send_whatsapp');
+
+        Route::get('payment_methods/report',[PaymentMethodController::class,'payment_report_index'])->name('payment_method.report');
+        Route::get('payment_methods/report/datatable',[PaymentMethodController::class,'payment_report_datatable'])->name('payment_method.report.datatable');
+        Route::get('payment_methods/report/widget',[PaymentMethodController::class,'payment_report_widget'])->name('payment_method.report.widget');
+
+        
         
     });
 });

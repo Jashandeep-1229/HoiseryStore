@@ -8,6 +8,8 @@ use App\Models\Item;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Season;
+use App\Models\Ledger;
+use App\Models\PurchaseOrder;
 use Illuminate\Http\Request;
 use PDF;
 
@@ -36,6 +38,9 @@ class ManageStockController extends Controller
         }
         else{
             $manage_stock = ManageStock::where('item_detail_id',$request->article);
+        }
+        if(auth()->user()->role_as != 'Admin'){
+            $manage_stock->where('date',now())->where('user_id',auth()->user()->id);
         }
         
         if($request->from_date){
@@ -171,6 +176,27 @@ class ManageStockController extends Controller
         $stock->in_out = $request->in_out;
         $stock->software_remarks = 'Manually Stock In';
         $stock->save();
+        if($request->in_out == 'In'){
+            if($item_detail->from == 'Purchase' && ($item_detail->from_id ?? 0) != 0){
+                if(($item_detail->purchase_price ?? 0) > 0){
+                    $ledger = Ledger::where('from','Add More Stock')->where('from_id',$stock->id)->first();
+                    if(!$ledger){
+                        $ledger = new Ledger;
+                        $ledger->from = 'Add More Stock';
+                        $ledger->from_id = $stock->id;
+                    }
+                    $ledger->user_id = auth()->user()->id;
+                    $vendor_id = PurchaseOrder::where('id',$item_detail->from_id)->first()->vendor_id;
+                    $ledger->account_id = $vendor_id;
+                    $ledger->date = $request->date;
+                    $ledger->amount = $item_detail->purchase_price * $request->quantity;
+                    $ledger->dr_cr = 'Cr';
+                    $ledger->remarks = $request->remarks ?? 'More Stock In';
+                    $ledger->status = 1;
+                    $ledger->save();
+                }
+            }
+        }
         $data = 
         [
             'result' => 1,
@@ -273,6 +299,29 @@ class ManageStockController extends Controller
         $manageStock->quantity = $request->quantity;
         $manageStock->software_remarks = 'Quantity Updated';
         $manageStock->update();
+
+        $item_detail = ItemDetail::find($manageStock->item_detail_id);
+        if($item_detail->from == 'Purchase' && ($item_detail->from_id ?? 0) != 0){
+            if(($item_detail->purchase_price ?? 0) > 0){
+                $ledger = Ledger::where('from','Add More Stock')->where('from_id',$manageStock->id)->first();
+                if(!$ledger){
+                    $ledger = new Ledger;
+                    $ledger->from = 'Add More Stock';
+                    $ledger->from_id = $manageStock->id;
+                }
+                
+                $ledger->amount = $item_detail->purchase_price * $request->quantity;
+              
+                $ledger->status = 1;
+                $ledger->save();
+            }
+        }
+        else{
+            $ledger = Ledger::where('from','Add More Stock')->where('from_id',$manageStock->id)->first();
+            if($ledger){
+                $ledger->delete();
+            }
+        }
         $data = 
         [
             'result' => 1,
@@ -363,6 +412,10 @@ class ManageStockController extends Controller
     public function delete($id)
     {
         $manage_stock = ManageStock::find($id);
+        $ledger = Ledger::where('from','Add More Stock')->where('from_id',$manage_stock->id)->first();
+        if ($ledger) {
+            $ledger->delete();
+        }
         $manage_stock->delete();
         $data = 
         [

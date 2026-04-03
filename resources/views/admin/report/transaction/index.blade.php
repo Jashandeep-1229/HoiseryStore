@@ -29,6 +29,7 @@
                                             <option value="1000">1000</option>
                                         </select>
                                     </label>
+                                    <span class="badge badge-primary"><i class="fa fa-eye" id="toggle_widget"></i></span>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -48,6 +49,7 @@
                                         
                                     </div>
                                 </div>
+                                
                             {{-- <div class="col-md-3">
                                 <select class="form-control js-example-basic-single" multiple name="filter[]">
                                     <option value="Income">Income</option>
@@ -92,6 +94,15 @@
     <script>
         $(document).ready(function(){
             get_datatable();
+            $('#toggle_widget').click(function(){
+            $('#get_widget').toggle(); // show/hide widget section
+
+            if($('#get_widget').is(':visible')){
+                $(this).text('Hide');
+            } else {
+                $(this).text('Show');
+            }
+        });
         });
 
         $(document).on('click','.pages a',function(n){

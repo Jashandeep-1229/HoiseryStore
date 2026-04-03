@@ -27,6 +27,7 @@
                     <option value="Order_Management" {{ (old('role_as', $user->role_as ?? '') == 'Order_Management') ? 'selected' : '' }}>Order Management</option>
                     <option value="Stock_Management" {{ (old('role_as', $user->role_as ?? '') == 'Stock_Management') ? 'selected' : '' }}>Stock Management</option>
                     <option value="Purchase_Management" {{ (old('role_as', $user->role_as ?? '') == 'Purchase_Management') ? 'selected' : '' }}>Purchase Management</option>
+                    <option value="Order_Stock_Management" {{ (old('role_as', $user->role_as ?? '') == 'Order_Stock_Management') ? 'selected' : '' }}>Order & Stock Management</option>
                 </select>
             </div>
 

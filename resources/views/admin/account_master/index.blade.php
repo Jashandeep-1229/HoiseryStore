@@ -26,23 +26,29 @@
                             <div class="col-md-2">
                                 <select class="form-control" name="from" id="from" required>
                                     <option value="" selected disabled>Select From</option>
-                                    <option value="Vendor">Vendor</option>
-                                    <option value="Customer">Customer</option>
-                                    <option value="Expense">Expense</option>
-                                    <option value="Income">Income</option>
+                                    <option value="Vendor" {{ $from == 'Vendor' ? 'selected' : '' }}>Vendor</option>
+                                    <option value="Customer" {{ $from == 'Customer' ? 'selected' : '' }}>Customer</option>
+                                    <option value="Expense" {{ $from == 'Expense' ? 'selected' : '' }}>Expense</option>
+                                    <option value="Income" {{ $from == 'Income' ? 'selected' : '' }}>Income</option>
                                 </select>
                             </div>
 
                             <!-- Dynamic Fields Start -->
+                            @if($from == 'Vendor' || $from == 'Customer')
                             <div class="col-md-3 d-none" id="business_name_div">
                                 <input type="text" name="business_name" id="business_name" placeholder="Business Name" class="form-control">
                             </div>
+                            @endif
+                            @if($from == 'Vendor' || $from == 'Customer')
                             <div class="col-md-3 d-none" id="phone_no_div">
                                 <input type="text" name="phone_no" id="phone_no" placeholder="Phone Number" class="form-control">
                             </div>
+                            @endif
+                            @if($from == 'Vendor' || $from == 'Customer')
                             <div class="col-md-3 d-none mt-3" id="city_div">
                                 <input type="text" name="city" id="city" placeholder="City" class="form-control">
                             </div>
+                            @endif
                             <!-- Dynamic Fields End -->
                            
                             <div class="col-md-2 mt-3">
@@ -132,7 +138,7 @@
             var value = $('#basic-2_value').val();
             var search = $('#basic-2_search').val();
             var page = page ?? 1;
-            $.get('{{ route("account_master.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}"}, function(data){
+            $.get('{{ route("account_master.datatable") }}?page='+page+'&value='+value+'&search='+search+'', { _token: "{{csrf_token() }}",from:"{{$from}}"}, function(data){
                 $('#get_datatable').html(data);
                 $('#basic-test').DataTable({ dom: 'Brt', "pageLength": -1 , responsive: true, scrollY: "50vh",
                 scrollCollapse: true,});

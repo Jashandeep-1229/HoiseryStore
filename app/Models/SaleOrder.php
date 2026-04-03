@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class SaleOrder extends Model
 {
     use HasFactory,SoftDeletes;
-    protected $fillable = ['sale_no','sale_date','account_id','total_items','total_quantity','total_sale_amount','total_paid_amount','total_discount','adjusted_amount','total_tax','total_courier','total_net_amount','total_pending_amount','payment_method','status','remarks','deleted_at'];
+    protected $fillable = ['user_id','sale_no','sale_date','account_id','total_items','total_quantity','total_sale_amount','total_paid_amount','total_discount','adjusted_amount','total_tax','total_courier','total_net_amount','total_pending_amount','payment_method','status','remarks','deleted_at'];
 
     public function account(){
         return $this->belongsTo(AccountMaster::class, 'account_id');

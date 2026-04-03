@@ -28,12 +28,13 @@
                         <div class="col-md-3 form-group mb-3">
                             <h6>Select Customer <span class="badge badge-success text-white p-1" onclick="add_customer()"><i class="fa fa-plus"></i></span> </h6>
                             
-                            <select class="js-example-basic-single" name="account_id" id="account_id" required>
+                            <select class="js-example-basic-single" name="account_id" id="account_id" onchange="get_balance(this.value)" required>
                                 <option value="" selected disabled>Select Customer...</option>
                                 @foreach($account_master as $item)
                                 <option value="{{ $item->id }}" {{ ($sale->account_id ?? '') == $item->id ? 'selected':'' }}>{{ $item->name }} <small> ({{$item->phone_no ?? ''}} - {{$item->business_name ?? ''}})</small></option>
                                 @endforeach
                             </select>
+                            <span id="show_balance" style="display:none">Balance : <span id="balance_amount">0</span></span>
                         </div>
                         <hr>
                       
@@ -231,6 +232,17 @@
         $('#ajax_html').html('<div class="loader-box"><div class="loader-37"></div></div>');
         $.get(url, {modal_from:'Customer'},function(data){
             $('#ajax_html').html(data);
+        });
+    }
+    function get_balance(customer_id){
+        $.get('{{ route("sale.get_balance") }}', {customer_id: customer_id}, function(data) {
+            if(data.amount > 0){
+                $('#show_balance').show(100);
+                $('#balance_amount').text(data.amount);
+            }else{
+                $('#show_balance').hide(100);
+                $('#balance_amount').text(0);
+            }
         });
     }
     $('#edit_modal').on('submit','form', function (event) {

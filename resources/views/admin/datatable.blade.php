@@ -36,8 +36,11 @@
                     @endforeach
                 </td>
                 <td>
-                    Total - {{formatIndianNumberWithoutDecimal($list->total_sale_amount ?? 0)}} <br>
-                    
+                    Total - 
+                    @if(($list->total_sale_amount ?? 0) > ($list->total_net_amount ?? 0))
+                        <s class="text-muted">{{formatIndianNumberWithoutDecimal($list->total_sale_amount)}}</s>
+                    @endif
+                    <span class="text-success">{{formatIndianNumberWithoutDecimal($list->total_net_amount ?? 0)}}</span> <br>
                 </td>
                 <td>
                    

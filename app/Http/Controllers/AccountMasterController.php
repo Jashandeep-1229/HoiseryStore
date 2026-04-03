@@ -12,13 +12,14 @@ class AccountMasterController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.account_master.index');
+        $from = $request->from;
+        return view('admin.account_master.index',compact('from'));
     }
     public function datatable(Request $request){
         $number = $request->value ?? 50;
-        $querry = AccountMaster::query();
+        $querry = AccountMaster::where('from',$request->from);
         if($request->search){
             $querry->where('name','like','%'.$request->search.'%');
         }

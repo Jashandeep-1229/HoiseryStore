@@ -26,12 +26,16 @@ class SaleOrderController extends Controller
 
     public function datatable(Request $request){
         $number = $request->value ?? 50;
-        $querry = SaleOrder::query();
+        $querry = SaleOrder::with(['account', 'details.item_detail']);
         if($request->search){
             $querry->where('sale_no','like','%'.$request->search.'%')
             ->orWhereHas('account',function($query) use ($request){
                 $query->where('name','like','%'.$request->search.'%');
             });
+        }
+        if(auth()->user()->role_as != 'Admin')
+        {
+            $querry->where('sale_date',now())->where('user_id',auth()->user()->id);
         }
         if($request->from_date){
             $querry->where('sale_date','>=',$request->from_date);
@@ -101,6 +105,7 @@ class SaleOrderController extends Controller
         $input = $request->all();
         $input['payment_method'] = json_encode($request->payment_method);
         $input['status'] = 1;
+        $input['user_id'] = auth()->user()->id;
         $input['sale_date'] = $request->sale_date;
         $sale = SaleOrder::updateOrCreate(['id' => $input['id']],$input);
         if($input['id'] == 0){
@@ -167,6 +172,7 @@ class SaleOrderController extends Controller
                     // Update existing entry
                     $ledger = $existingLedgers[$key];
                     $ledger->amount = $amount;
+                    $ledger->account_id = $sale->account_id;
                     $ledger->save();
                 } else {
                     // Create new entry
@@ -212,18 +218,39 @@ class SaleOrderController extends Controller
         $pdf->getDomPDF()->set_option('defaultFont', 'Arial Unicode MS');
         $pdf->getDomPDF()->set_option('fontCache', public_path('font_cache'));
         $header_height = 240;
-        $each_item_height = 27;
-        $footer_height = 90;
-        $more_space_1 = 0;
-        $more_space_2 = 0;
-        if($sale->total_tax > 0){
-            $more_space_1 = 10;
+        $footer_height = 100;
+        $items_height = 0;
+        
+        foreach($sale->details as $item) {
+            $articleName = $item->item_detail->article_name ?? '';
+            // keep only digits and dashes as per blade logic
+            $numberOnly = preg_replace('/[^0-9\-]/', '', $articleName);
+            $categoryName = $item->item_detail->category->name ?? '';
+            
+            // Baseline height for an item (usually 2 lines: article and category)
+            $item_line_height = 30; 
+            
+            // Estimate if wrapping occurs. ARTICLE column is ~35-40% of 72mm
+            // roughly 12-15 characters per line.
+            $desc_len = strlen($numberOnly);
+            if ($desc_len > 15) {
+                $extra_lines = ceil($desc_len / 15) - 1;
+                $item_line_height += ($extra_lines * 12);
+            }
+            
+            $items_height += $item_line_height;
         }
-        if($sale->total_courier > 0){
-            $more_space_2 = 10;
-        }
-        $space_height = 45;
-        $total_height = $header_height + ($each_item_height * count($sale->details)) + $footer_height + $space_height + $more_space_1 + $more_space_2;
+
+        $more_space_1 = ($sale->total_tax > 0) ? 15 : 0;
+        $more_space_2 = ($sale->total_courier > 0) ? 15 : 0;
+        $discount_space = ($discount_amount > 0 || $sale->total_discount > 0) ? 15 : 0;
+
+        $space_height = 50;
+        $total_height = $header_height + $items_height + $footer_height + $space_height + $more_space_1 + $more_space_2 + $discount_space;
+        
+        // Ensure minimum height
+        if ($total_height < 300) $total_height = 300;
+
         $pdf->getDomPDF()->setPaper([0, 0, 204, $total_height], 'portrait', 'mm');
         return $pdf->stream($sale->sale_no.'.pdf');
     }
@@ -233,6 +260,49 @@ class SaleOrderController extends Controller
         return view('admin.sale.report_index',compact('customers'));
     }
 
+    public function get_balance(Request $request){
+        $totalCustomer = Ledger::where('account_id',$request->customer_id)->select(
+            // Debit: you are owed money (sale or manual Dr)
+            \DB::raw("
+                SUM(CASE 
+                    WHEN (`from` LIKE 'Sale Customer%' AND dr_cr = 'Dr')
+                      OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Dr')
+                    THEN amount 
+                    ELSE 0 
+                END) as total_dr
+            "),
+        
+            // Credit: you received money (payment or manual Cr)
+            \DB::raw("
+                SUM(CASE 
+                    WHEN (`from` LIKE 'Payment Recd From Customer%' AND dr_cr = 'Cr')
+                      OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Cr')
+                    THEN amount 
+                    ELSE 0 
+                END) as total_cr
+            "),
+        
+            // Pending = Dr - Cr
+            \DB::raw("
+                (
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Sale Customer%' AND dr_cr = 'Dr')
+                          OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Dr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                    -
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Payment Recd From Customer%' AND dr_cr = 'Cr')
+                          OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Cr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                ) as pending
+            ")
+        )->first();
+        return response()->json(['amount' => $totalCustomer->pending]);
+    }
     /**
      * Display the specified resource.
      *

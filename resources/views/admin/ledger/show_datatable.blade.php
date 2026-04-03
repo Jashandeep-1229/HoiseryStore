@@ -70,7 +70,7 @@
                 <td>
                    
                    
-                   @if($item->from_id == 0)
+                   @if($item->from_id == 0 || $item->from == 'Add More Stock')
                    <a onclick="edit_modal({{$item->id}},{{$key+1}})"  class="btn btn-warning btn-sm  pointer p-1 f-14" data-bs-toggle="modal" data-bs-target="#edit_modal"  data-toggle="tooltip" title="Edit">
                         <i class="fa fa-edit"></i>
                     </a>

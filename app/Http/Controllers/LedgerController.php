@@ -200,8 +200,20 @@ class LedgerController extends Controller
             'income' => (clone $querry)->where('from', 'Income - Manually')->sum('amount'),
             'purchase' => (clone $querry)->where('from', 'Purchase Vendor')->sum('amount'),
             'sale' => (clone $querry)->where('from', 'Sale Customer')->sum('amount'),
-            'payment' => (clone $querry)->where('from', 'like', 'Payment To Vendor%')->sum('amount'),
-            'received' => (clone $querry)->where('from', 'like', 'Payment Recd From Customer%')->sum('amount'),
+            'payment' => (clone $querry)
+            ->where(function ($q) {
+                $q->where('from', 'like', 'Payment To Vendor%')
+                  ->orWhere('from', 'like', 'Manually - Vendor%');
+            })
+            ->where('dr_cr','Dr')
+            ->sum('amount'),
+            'received' => (clone $querry)
+            ->where(function ($q) {
+                $q->where('from', 'like', 'Payment Recd From Customer%')
+                  ->orWhere('from', 'like', 'Manually - Customer%');
+            })
+            ->where('dr_cr','Cr')
+            ->sum('amount'),
         ];
         $ledger = $querry->orderBy('date','desc')->where('payment_method_id','!=',0)->paginate($request->value ?? 50);
         return view('admin.report.transaction.datatable',compact('ledger','totals'));
@@ -245,6 +257,8 @@ class LedgerController extends Controller
 
     public function profit_datatable(Request $request){
         $querry = Ledger::query();
+        $fromDate = $request->from_date; // example: '2025-10-01'
+        $toDate   = $request->to_date;   // example: '2025-10-28'
         if($request->from_date){
             $querry->where('date','>=',$request->from_date);
         }
@@ -278,27 +292,46 @@ class LedgerController extends Controller
 
         // --- Vendor Payments (overall total only) ---
         $totalVendor = Ledger::select(
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) as total_cr"),
+            // Credit: vendor payable increases
             \DB::raw("
                 SUM(CASE 
-                    WHEN `from` LIKE 'Payment To Vendor%' 
-                    OR `from` LIKE 'Manually - Vendor%' 
+                    WHEN (`from` LIKE 'Purchase Vendor%' AND dr_cr = 'Cr')
+                      OR (`from` LIKE 'Manually - Vendor%' AND dr_cr = 'Cr')
+                       OR (`from` LIKE 'Add More Stock' AND dr_cr = 'Cr')
+                    THEN amount 
+                    ELSE 0 
+                END) as total_cr
+            "),
+        
+            // Debit: vendor payable decreases (payment made)
+            \DB::raw("
+                SUM(CASE 
+                    WHEN (`from` LIKE 'Payment To Vendor%' AND dr_cr = 'Dr')
+                      OR (`from` LIKE 'Manually - Vendor%' AND dr_cr = 'Dr')
                     THEN amount 
                     ELSE 0 
                 END) as total_dr
             "),
-            \DB::raw("(
-                SUM(CASE WHEN `from` LIKE 'Purchase Vendor%' THEN amount ELSE 0 END) -
-                SUM(CASE 
-                    WHEN `from` LIKE 'Payment To Vendor%' 
-                    OR `from` LIKE 'Manually - Vendor%' 
-                    THEN amount 
-                    ELSE 0 
-                END)
-        ) as due")
-        )
-        ->first();
-
+        
+            // Remaining due = Cr - Dr
+            \DB::raw("
+                (
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Purchase Vendor%' AND dr_cr = 'Cr')
+                          OR (`from` LIKE 'Manually - Vendor%' AND dr_cr = 'Cr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                    -
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Payment To Vendor%' AND dr_cr = 'Dr')
+                          OR (`from` LIKE 'Manually - Vendor%' AND dr_cr = 'Dr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                ) as due
+            ")
+        )->first();
 
         // --- Customer Payments (per account) ---
         $customerPayments = Ledger::select(
@@ -327,26 +360,46 @@ class LedgerController extends Controller
 
         // --- Customer Payments (overall total only) ---
         $totalCustomer = Ledger::select(
-            \DB::raw("SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) as total_dr"),
+            // Debit: you are owed money (sale or manual Dr)
             \DB::raw("
                 SUM(CASE 
-                    WHEN `from` LIKE 'Payment Recd From Customer%' 
-                      OR `from` LIKE 'Manually - Customer%' 
+                    WHEN (`from` LIKE 'Sale Customer%' AND dr_cr = 'Dr')
+                      OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Dr')
+                    THEN amount 
+                    ELSE 0 
+                END) as total_dr
+            "),
+        
+            // Credit: you received money (payment or manual Cr)
+            \DB::raw("
+                SUM(CASE 
+                    WHEN (`from` LIKE 'Payment Recd From Customer%' AND dr_cr = 'Cr')
+                      OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Cr')
                     THEN amount 
                     ELSE 0 
                 END) as total_cr
             "),
-            \DB::raw("(
-                SUM(CASE WHEN `from` LIKE 'Sale Customer%' THEN amount ELSE 0 END) -
-                SUM(CASE 
-                    WHEN `from` LIKE 'Payment Recd From Customer%' 
-                      OR `from` LIKE 'Manually - Customer%' 
-                    THEN amount 
-                    ELSE 0 
-                END)
-            ) as pending")
-        )
-        ->first();
+        
+            // Pending = Dr - Cr
+            \DB::raw("
+                (
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Sale Customer%' AND dr_cr = 'Dr')
+                          OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Dr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                    -
+                    SUM(CASE 
+                        WHEN (`from` LIKE 'Payment Recd From Customer%' AND dr_cr = 'Cr')
+                          OR (`from` LIKE 'Manually - Customer%' AND dr_cr = 'Cr')
+                        THEN amount 
+                        ELSE 0 
+                    END)
+                ) as pending
+            ")
+        )->first();
+        
 
        
         $totals = [
@@ -428,8 +481,31 @@ class LedgerController extends Controller
             return $selling_price * $stock->quantity - ($stock->discount * $stock->quantity);
         });
 
-
-        return view('admin.report.profit.datatable',compact('querry','totals','manage_stock','total_profit','total_purchase','total_sale','vendorPayments','customerPayments','totalVendor','totalCustomer'));
+    $paymentData = Ledger::select(
+            'payment_method_id',
+            \DB::raw("SUM(amount) as total_amount")
+        )
+        ->where(function ($que) {
+            $que->where('from', 'LIKE', 'Payment Recd From Customer%')
+                  ->orWhere('from', 'LIKE', 'Manually - Customer%');
+        })
+        ->when($request->from_date, function ($q) use ($request) {
+            $q->where('date', '>=', $request->from_date . ' 00:00:00');
+        })
+        ->when($request->to_date, function ($q) use ($request) {
+            $q->where('date', '<=', $request->to_date . ' 23:59:59');
+        })
+        ->groupBy('payment_method_id')
+        ->with(['payment_method:id,name'])
+        ->get()
+        ->mapWithKeys(function ($item) {
+            return [
+                $item->payment_method->name ?? 'Unknown' => (float) $item->total_amount
+            ];
+        });
+    
+    
+        return view('admin.report.profit.datatable',compact('querry','totals','manage_stock','total_profit','total_purchase','total_sale','vendorPayments','customerPayments','totalVendor','totalCustomer','paymentData'));
     }
 
     public function datatable(Request $request){

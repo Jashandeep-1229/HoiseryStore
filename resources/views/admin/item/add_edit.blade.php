@@ -75,8 +75,11 @@
                                 <input type="number" step="any" name="max_alert" id="max_alert" value="{{ old('max_alert') ?? $item->max_alert ?? 50 }}" class="form-control">
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            
+                        <div class="col-md-8 mt-2">
+                            <div class="form-group">
+                                <h6>Remarks</h6>
+                                <input type="text" name="remarks" value="{{ old('remarks') ?? $item->remarks ?? '' }}" class="form-control">
+                            </div>
                         </div>
                         <div class="col-md-6 mt-2">
                             <div class="form-group">
@@ -170,11 +173,19 @@
                                                         </td>
 
                                                         <td>
+                                                            @if($detail->from != 'Purchase')
                                                             <input type="number" step="any" name="add[{{ $loop->parent->index }}][item_detail][{{ $detailIndex }}][opening_stock]" 
                                                                 value="{{ $detail->opening_stock }}" class="form-control form-control-sm" oninput="recalculate_totals({{ $articleGroup->first()->id }})">
                                                                 <span class="f-12"> Bundle: <span class="mutha_text">{{ $detail->mutha }}</span></span>
                                                             <input type="hidden" name="add[{{ $loop->parent->index }}][item_detail][{{ $detailIndex }}][mutha]" 
                                                                 value="{{ $detail->mutha }}" class="mutha_input">
+                                                                @else
+                                                                <input type="number" step="any" name="add[{{ $loop->parent->index }}][item_detail][{{ $detailIndex }}][opening_stock]" 
+                                                                value="0" class="form-control form-control-sm" oninput="recalculate_totals({{ $articleGroup->first()->id }})">
+                                                                <span class="f-12"> Bundle: <span class="mutha_text">0</span></span>
+                                                            <input type="hidden" name="add[{{ $loop->parent->index }}][item_detail][{{ $detailIndex }}][mutha]" 
+                                                                value="0" class="mutha_input">
+                                                                @endif
                                                             </td>
 
                                                         @if($detailIndex == 0)
@@ -265,7 +276,7 @@
                         category_list();
                        }
                       
-                       $.notify({ title:'Success', message:response.messafe }, { type:'success', });
+                       $.notify({ title:'Success', message:response.message }, { type:'success', });
                    }
                    else{
                     $.notify({ title:'Error', message:response.message }, { type:'danger', });
@@ -312,7 +323,7 @@
         var brand_id = $('#brand_id').val() || 0;
         var category_id = $('#category_id').val() || 0;
         var key = $('.sr').length ?? 0;
-        var number_format = parseInt($('#number_format').text())
+        var number_format = "{{$number_format}}";
         if(brand_id == 0 || category_id == 0){
             alert('Please select brand or category');
             return false;
@@ -330,7 +341,7 @@
                 else{
                     $('#get_data_list').append(data.html);
                     $('#article_no').val('');
-                    $('#number_format').text(data.number_format);
+                    $('#article_no').attr('placeholder','Enter Article No - '+data.number_format);
                 }
             });
         }

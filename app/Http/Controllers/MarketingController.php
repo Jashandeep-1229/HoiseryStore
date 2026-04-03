@@ -189,6 +189,9 @@ class MarketingController extends Controller
         $file = url($marketing->file);
         foreach(json_decode($marketing->selected_customer) ?? [] as $cust){
             $cust = AccountMaster::find($cust);
+            if($cust->is_whatsapp){
+                continue;
+            }
             $message_template = 'text_message';
             $component_header = [];
             if($marketing->message_type == 'Image'){
@@ -200,6 +203,7 @@ class MarketingController extends Controller
                     ],
                 ]];
             }
+            
             if($marketing->message_type == 'Video'){
                 $message_template = 'video_message';
                 $component_header = [[
@@ -225,21 +229,50 @@ class MarketingController extends Controller
                     'text' =>  $marketing->message,
                 ],
             ];
+            if($marketing->message_type == 'Ak Fashion 1'){
+                $message_template = 'ak_message_one';
+                $component_header = [[
+                    'type' => 'image',
+                    'image' => [
+                        'link' => $file,
+                    ],
+                ]];
+                $component_body = [];
+            }
+            if($marketing->message_type == 'Ak Fashion 2'){
+                $message_template = 'ak_message_one';
+                $component_header = [[
+                    'type' => 'image',
+                    'image' => [
+                        'link' => $file,
+                    ],
+                ]];
+                $component_body = [];
+            }
             $component_buttons = [];
             $components = new Component($component_header, $component_body, $component_buttons);
-            $number = '91'.$cust->phone_no;
+            $phone = preg_replace('/\D/', '', $cust->phone_no); // keep only digits
+
+            if (strlen($phone) === 10) {
+                $number = '91' . $phone;
+            } else {
+                // invalid phone number → ignore
+                $number = null;
+                continue;
+            }
+            // $number = '91'.$cust->phone_no;
             $whatsapp_cloud_api = new WhatsAppCloudApi([
-                'from_phone_number_id' => '863369476858208',
-                'access_token' => 'EAAaIAlVcpmEBPuUr4ogekO8qbMLHhBz95xYO9vFQgNF2eE0v82wbXIgy0k9UZABpI7ZBLWjzCin6PRl5St6bcYXaLuhIpRSY5uuB2wwbMN6rRvEE51cCDXJH5BzGxLeCRZChh3UiSEyKJb3X9azIlHu7aEGLRkSS3yN2M2LydHjRd4QeywnaZBRjDMTFKysZC3gZDZD',
+                'from_phone_number_id' => '961224797063761',
+                'access_token' => 'EAAaIAlVcpmEBQCrP9NZCuez1ZA8F3dtGAVPXXrO2BlB971UBw6C3MBOH9qe3DsoWavjjKccZC164hSPFgU3b5ttTKmnRCOOZAC86cpZA2TslmWm605oEov3v8I83dV2BWJlAjqmaZAfoAIqZCz1x3kPXefKsZCi5poq6uYCHP3rcqHOZBzVx7dt16zfv85uKbeAZDZD',
             ]);
             // dd($message_template,$number);
             $whatsapp_cloud_api->sendTemplate($number, $message_template, 'en', $components);
-            $cust->is_whatsapp = 0;
+            $cust->is_whatsapp = 1;
             $cust->update();
         }
         $marketing->status = 1;
         $marketing->update();
-
+        AccountMaster::where('from','Customer')->where('is_whatsapp',1)->update(['is_whatsapp' => 0]);
         return 1;
     }
 }

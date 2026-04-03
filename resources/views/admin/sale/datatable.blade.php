@@ -36,7 +36,11 @@
                     @endforeach
                 </td>
                 <td>
-                    Total - <span class="text-success">{{formatIndianNumber($list->total_net_amount ?? 0)}}</span> <br>
+                    Total - 
+                    @if(($list->total_sale_amount ?? 0) > ($list->total_net_amount ?? 0))
+                        <s class="text-muted">{{formatIndianNumber($list->total_sale_amount)}}</s>
+                    @endif
+                    <span class="text-success">{{formatIndianNumber($list->total_net_amount ?? 0)}}</span> <br>
                     @if($list->getProfitAttribute() > 0)
                     Profit - <span class="text-success">{{formatIndianNumber(($list->getProfitAttribute() ?? 0) - ($list->adjusted_amount ?? 0))}} @if($list->total_net_amount > 0)<small>({{formatIndianNumber((($list->getProfitAttribute() ?? 0) - ($list->adjusted_amount ?? 0))/$list->total_net_amount * 100 ) ?? 0}}%)</small>@endif</span> <br>
                     

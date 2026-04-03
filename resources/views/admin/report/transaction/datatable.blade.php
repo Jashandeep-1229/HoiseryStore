@@ -1,4 +1,4 @@
-<div class="row widget-grid">
+<div class="row widget-grid" id="get_widget" style="display: none">
     <div class="col-md-2">
       <div class="card small-widget"> 
         <div class="card-body primary"> <span class="f-light">Total Expense</span>

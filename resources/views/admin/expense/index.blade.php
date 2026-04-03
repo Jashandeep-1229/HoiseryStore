@@ -49,12 +49,12 @@
                            
                             <div class="col-md-6 mt-3">
                                 <h6>Remarks</h6>
-                                <input type="text" placeholder="Remarks" name="remarks" id="remarks" class="form-control">
+                                <textarea rows="3" placeholder="Remarks" name="remarks" id="remarks" class="form-control"></textarea>
                             </div>
                            
                             
                            
-                            <div class="col-md-2 mt-3">
+                            <div class="col-md-2 mt-5">
                                <button type="submit" id="add_data" class="btn btn-primary w-100" >Add +</button>
                             </div>
                            

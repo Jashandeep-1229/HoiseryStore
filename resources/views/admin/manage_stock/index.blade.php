@@ -91,6 +91,7 @@
                                         </label>
                                     </div>
                                 </div>
+                                @if (auth()->user()->role_as == 'Admin')
                                 <div class="col-md-2">
                                     <div class="dataTables_filter">
                                     <label>From:
@@ -105,6 +106,7 @@
                                     </label></div>
 
                                 </div>
+                                @endif
                                
                                 <div class="col-md-3">
                                     <div class="dataTables_filter" style="float:right !important">

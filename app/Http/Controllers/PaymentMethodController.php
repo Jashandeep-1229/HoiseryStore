@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaymentMethod;
+use App\Models\Ledger;
 use Illuminate\Http\Request;
 
 class PaymentMethodController extends Controller
@@ -30,14 +31,90 @@ class PaymentMethodController extends Controller
         return view('admin.payment_master.modal',compact('payment_master'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function payment_report_index(Request $request){
+        return view('admin.report.payment.index');
+    }
+
+    public function payment_report_widget(Request $request)
     {
-        //
+        $payment = PaymentMethod::where('status', 1)->get();
+        $startDate = '2025-11-12';
+        // ✅ Get Opening Balances (before from_date)
+        $opening = Ledger::select(
+                'payment_method_id',
+                \DB::raw("
+                    SUM(CASE 
+                        WHEN dr_cr = 'Cr' THEN amount
+                        WHEN dr_cr = 'Dr' THEN -amount
+                        ELSE 0 
+                    END) as opening_balance
+                ")
+            )
+            ->whereNotNull('payment_method_id')
+            ->where('payment_method_id', '!=', 0)
+            ->whereDate('date', '>=', $startDate)
+            ->when($request->from_date, function ($q) use ($request) {
+                $q->where('date', '<', $request->from_date);
+            })
+            ->groupBy('payment_method_id')
+            ->get()
+            ->keyBy('payment_method_id');
+    
+        // ✅ Get Transactions Within Date Range
+        $current = Ledger::select(
+                'payment_method_id',
+                \DB::raw("
+                    SUM(CASE 
+                        WHEN dr_cr = 'Cr' THEN amount
+                        WHEN dr_cr = 'Dr' THEN -amount
+                        ELSE 0 
+                    END) as net_balance
+                ")
+            )
+            ->whereNotNull('payment_method_id')
+            ->where('payment_method_id', '!=', 0)
+            ->whereDate('date', '>=', $startDate)
+            ->when($request->from_date, function ($q) use ($request) {
+                $q->where('date', '>=', $request->from_date);
+            })
+            ->when($request->to_date, function ($q) use ($request) {
+                $q->where('date', '<=', $request->to_date);
+            })
+            
+            ->groupBy('payment_method_id')
+            ->get()
+            ->keyBy('payment_method_id');
+    
+        // ✅ Combine both into one final closing balance
+        $result = $payment->map(function ($pay) use ($opening, $current) {
+            $opening_balance = $opening[$pay->id]->opening_balance ?? 0;
+            $net_balance = $current[$pay->id]->net_balance ?? 0;
+    
+            return [
+                'payment_method_id' => $pay->id,
+                'payment_method_name' => $pay->name ?? 'N/A',
+                // 🔹 Closing = Opening + Current
+                'closing_balance' => $opening_balance + $net_balance,
+            ];
+        });
+    
+        return view('admin.report.payment.widget', compact('result'));
+    }
+    
+    public function payment_report_datatable(Request $request){
+        $ledger = Ledger::where('payment_method_id',($request->payment_method_id ?? 1))
+        ->when($request->from_date, function ($q) use ($request) {
+            $q->where('date', '>=', $request->from_date);
+        })
+        ->when($request->to_date, function ($q) use ($request) {
+            $q->where('date', '<=', $request->to_date);
+        });
+        $startDate = '2025-11-12';
+       
+        $value = $request->value ?? 250;
+       
+        $ledger = $ledger->whereDate('date', '>=', $startDate)->orderBy('date','desc')->paginate($value);
+        return view('admin.report.payment.datatable',compact('ledger'));
     }
 
     /**

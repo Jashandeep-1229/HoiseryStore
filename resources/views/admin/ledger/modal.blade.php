@@ -19,9 +19,13 @@
             <div class="col-md-12 form-group mb-3">
                 <h6>Dr/Cr</h6>
                 <select class="form-control" name="dr_cr" id="dr_cr" required>
-                                   
-                    <option value="Dr" {{$ledger->dr_cr == 'Dr' ? 'selected' : ''}}>Debit/In</option>
-                    <option value="Cr" {{$ledger->dr_cr == 'Cr' ? 'selected' : ''}}>Credit/Out</option>
+                    @if($ledger->from == 'Manually - Vendor')
+                    <option value="Dr" {{$ledger->dr_cr == 'Dr' ? 'selected' : ''}}>Payment Paid</option>
+                    <option value="Cr" {{$ledger->dr_cr == 'Cr' ? 'selected' : ''}}>Payment Due</option>
+                    @elseif($ledger->from == 'Manually - Customer' )
+                    <option value="Dr" {{$ledger->dr_cr == 'Dr' ? 'selected' : ''}}>Payment Due</option>
+                    <option value="Cr" {{$ledger->dr_cr == 'Cr' ? 'selected' : ''}}>Payment Received</option>
+                    @endif
                 </select>
             </div>
             <div class="col-md-12 form-group mb-3">

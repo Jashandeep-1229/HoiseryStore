@@ -18,6 +18,8 @@
                     <option value='Image' {{$marketing->message_type == 'Image' ? 'selected':''}}>Image</option>
                     <option value='Video' {{$marketing->message_type == 'Video' ? 'selected':''}}>Video</option>
                     <option value='PDF' {{$marketing->message_type == 'PDF' ? 'selected':''}}>PDF</option>
+                    <option value='Ak Fashion 1' {{$marketing->message_type == 'Ak Fashion 1' ? 'selected':''}}>Ak Fashion 1</option>
+                    <option value='Ak Fashion 2' {{$marketing->message_type == 'Ak Fashion 2' ? 'selected':''}}>Ak Fashion 1</option>
                 </select>
 
             </div>

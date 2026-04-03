@@ -27,7 +27,8 @@ class Ledger extends Model
                     'id'        => $order->id,
                     'order_no'  => $order->purchase_no,
                     'type'      => 'purchase',
-                    'from'      => 'Purchase Order'
+                    'from'      => 'Purchase Order',
+                    'account_id'      => $order->vendor_id,
                 ];
             }
         }
@@ -39,7 +40,8 @@ class Ledger extends Model
                     'id'        => $order->id,
                     'order_no'  => $order->sale_no,
                     'type'      => 'sale',
-                    'from'      => 'Sale Order'
+                    'from'      => 'Sale Order',
+                    'account_id'      => $order->account_id,
                 ];
             }
         }

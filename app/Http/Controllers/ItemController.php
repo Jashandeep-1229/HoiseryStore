@@ -57,6 +57,7 @@ class ItemController extends Controller
         if($request->brand_id == 0 || $request->category_id == 0){
             return -2;
         }
+        $number_format = (int) $request->number_format;
         $check_article = Item::where('article_name',$request->article_name)->where('is_temp',0)->first();
         if($check_article){
             return -1;
@@ -79,6 +80,7 @@ class ItemController extends Controller
                 $item->category_id = $request->category_id;
                 $item->min_alert = $request->min_alert ?? 5;
                 $item->max_alert = $request->max_alert ?? 50;
+                $item->remarks = $request->remarks ?? '';
                 $item->save();
             }
             $item_detail = new ItemDetail();
@@ -90,7 +92,7 @@ class ItemController extends Controller
             
         }
       
-        $number_format = 1;
+        $number_format += 1;
         $html = view('admin.item.add_article', compact('item_detail','item','number_format'))->render();
 
         return response()->json([
@@ -155,7 +157,9 @@ class ItemController extends Controller
         $category = Category::where('status',1)->get();
         $brand = Brand::where('status',1)->get();
         $season = Season::where('status',1)->get();
-        $number_format = Item::where('is_temp',0)->latest()->first()->number_from ?? 0;
+        $latest_item = Item::where('is_temp', 0)->latest()->first();
+        $number_format = $latest_item ? ($latest_item->number_from ?? (int) explode('-', $latest_item->article_name)[0] ?? 0) : 0;
+        $number_format = $number_format + 1;
         return view('admin.item.add_edit',compact('category','brand','season','number_format'));
     }
 
@@ -182,6 +186,7 @@ class ItemController extends Controller
                     $item->season_id = $request->season_id;
                     $item->min_alert = $request->min_alert;
                     $item->max_alert = $request->max_alert;
+                    $item->remarks = $request->remarks ?? '';
                     $item->is_temp = 1;
                     $item->save();
                 }
@@ -241,10 +246,11 @@ class ItemController extends Controller
                     if($detail['opening_stock'] > 0 &&  $item_detail->is_temp == 0){
                         $manage_stock = ManageStock::where('from_id',$item_detail->id)->where('from','Opening Stock - Master')->first();
                         if(!$manage_stock){
+                           
                             $manage_stock = new ManageStock;
                             $manage_stock->from = 'Opening Stock - Master';
                             $manage_stock->from_id = $item_detail->id;
-                            $manage_stock->save();
+                            
                         }
                         $manage_stock->date = now();
                         $manage_stock->item_detail_id = $item_detail->id;
@@ -259,6 +265,13 @@ class ItemController extends Controller
                         $manage_stock->save();
 
                         $stockIds[] = $manage_stock->id;
+                    }
+                    if($detail['opening_stock'] == 0){
+                        $manage_stock = ManageStock::where('from_id',$item_detail->id)->where('from','Opening Stock - Master')->first();
+                        if($manage_stock){
+                             $manage_stock->delete();
+                        }
+                       
                     }
                 }
                 $detail_items = ItemDetail::whereNotIn('id',$itemDetail_ids)->where('item_id',$item->id)->delete();

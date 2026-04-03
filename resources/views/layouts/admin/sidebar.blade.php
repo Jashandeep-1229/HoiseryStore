@@ -12,6 +12,7 @@
           <li class="back-btn"><a href="{{ url('/') }}"><img class="img-fluid" src="{{ asset(env('APP_FAVICON')) }}" alt=""></a>
             <div class="mobile-back text-end"><span>Back</span><i class="fa fa-angle-right ps-2" aria-hidden="true"></i></div>
           </li>
+          @if(auth()->user()->role_as === 'Admin')
           <li class="sidebar-main-title">
             <div>
               <h6>General</h6>
@@ -22,6 +23,7 @@
               <i data-feather="home"></i><span>Dashboard</span>
             </a>
           </li>
+          @endif
           @if(auth()->user()->role_as === 'Admin')
           <li class="sidebar-main-title">
             <div>
@@ -64,7 +66,7 @@
             </a>
           </li>
           @endif
-          @if(auth()->user()->role_as === 'Stock_Management' || auth()->user()->role_as === 'Admin')
+          @if(auth()->user()->role_as === 'Stock_Management' || auth()->user()->role_as === 'Admin' || auth()->user()->role_as == 'Order_Stock_Management')
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
               <i data-feather="archive"></i><span>Manage Stock</span>
@@ -72,8 +74,10 @@
             <ul class="sidebar-submenu">
               <li><a href="{{route('manage_stock.index','title=in')}}">Stock In </a></li>
               <li><a href="{{route('manage_stock.index','title=out')}}">Stock Out</a></li>
+              @if(auth()->user()->role_as == 'Admin')
               <li><a href="{{route('manage_stock.average')}}">Remaining Stock</a></li>
               <li><a href="{{route('manage_stock.report','title=all')}}">Stock Alert</a></li>
+              @endif
             </ul>
           </li>
           @endif
@@ -91,12 +95,14 @@
             <ul class="sidebar-submenu">
               <li><a href="{{route('purchase.create')}}">Add Purchase </a></li>
               <li><a href="{{route('purchase.index')}}">All Purchases</a></li>
+              @if(auth()->user()->role_as == 'Admin')
               <li><a href="{{route('purchase.report')}}">Purchase Report</a></li>
+              @endif
             
             </ul>
           </li>
           @endif
-          @if(auth()->user()->role_as === 'Order_Management' || auth()->user()->role_as === 'Admin')
+          @if(auth()->user()->role_as === 'Stock_Management' || auth()->user()->role_as === 'Admin' || auth()->user()->role_as == 'Order_Stock_Management')
           <li class="sidebar-main-title">
             <div>
               <h6>Sale Order</h6>
@@ -110,7 +116,9 @@
             <ul class="sidebar-submenu">
               <li><a href="{{route('sale.create')}}">Add Sale </a></li>
               <li><a href="{{route('sale.index')}}">All Sales</a></li>
+              @if(auth()->user()->role_as == 'Admin')
               <li><a href="{{route('sale.report')}}">Sale Report</a></li>
+              @endif
             
             </ul>
           </li>
@@ -172,7 +180,10 @@
               <label class="badge badge-light-danger">*</label>
             </a>
             <ul class="sidebar-submenu">
-              <li><a href="{{route('account_master.index')}}">Account Master </a></li>
+              <li><a href="{{route('account_master.index','from=Customer')}}">Customer </a></li>
+              <li><a href="{{route('account_master.index','from=Vendor')}}">Vendor </a></li>
+              <li><a href="{{route('account_master.index','from=Expense')}}">Expense </a></li>
+              <li><a href="{{route('account_master.index','from=Income')}}">Income </a></li>
               <li><a href="{{route('payment_master.index')}}">Payment Master </a></li>
               {{-- <li><a href="{{route('ledger.index','from=expense')}}">Expense</a></li>
               <li><a href="{{route('ledger.index','from=income')}}">Income</a></li> --}}
@@ -198,6 +209,11 @@
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title link-nav {{Route::is('profit.report') ? 'active' : ''}}" href="{{ route('profit.report') }}">
               <i data-feather="dollar-sign"></i><span>Profit & Loss Report</span>
+            </a>
+          </li>
+          <li class="sidebar-list">
+            <a class="sidebar-link sidebar-title link-nav {{Route::is('payment_method.report') ? 'active' : ''}}" href="{{ route('payment_method.report') }}">
+              <i data-feather="dollar-sign"></i><span>Payment Method Report</span>
             </a>
           </li>
           <li class="sidebar-main-title">

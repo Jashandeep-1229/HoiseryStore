@@ -158,6 +158,8 @@ span.multiselect-native-select select{
                                     <option value='Image'>Image</option>
                                     <option value='Video'>Video</option>
                                     <option value='PDF'>PDF</option>
+                                    <option value='Ak Fashion 1'>Ak Fashion 1</option>
+                                    <option value='Ak Fashion 2'>Ak Fashion 2</option>
                                 </select>
                             </div>
 
@@ -175,7 +177,7 @@ span.multiselect-native-select select{
 
                             <div class="col-md-12 mt-4">
                                 <textarea rows="3" name="message" autofocus id="message"  placeholder="Remarks" class="form-control" ></textarea>
-                                <small>1) Bold - Use *-*. 2) For Next Line - \n </small>
+                              
                             </div>  
                           
                             
