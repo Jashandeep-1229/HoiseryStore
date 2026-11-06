@@ -38,5 +38,18 @@ php artisan serve
 
 Open http://127.0.0.1:8000 in your browser.
 
+```
+WHATSAPP_TOKEN=your_token
+WHATSAPP_PHONE_ID=your_phone_number_id
+```
+
+## 👥 Contributors
+
+- [Jashandeep-1229](https://github.com/Jashandeep-1229)
+- [Varun-developer99](https://github.com/Varun-developer99)
+
+## 📄 License
+
+GPL-3.0
 ### WhatsApp setup (optional)
 Add your Meta WhatsApp Cloud API details to `.env`:
