@@ -1,0 +1,10 @@
+   /vendor
+   /node_modules
+   /public/hot
+   /public/storage
+   .env
+   .env.backup
+   .phpunit.result.cache
+   .DS_Store
+   .idea
+   .vscode
