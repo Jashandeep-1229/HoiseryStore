@@ -54,5 +54,3 @@ WHATSAPP_PHONE_ID=your_phone_number_id
 ## 📄 License
 
 GPL-3.0
-### WhatsApp setup (optional)
-Add your Meta WhatsApp Cloud API details to `.env`:
