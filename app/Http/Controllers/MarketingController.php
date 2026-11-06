@@ -262,8 +262,8 @@ class MarketingController extends Controller
             }
             // $number = '91'.$cust->phone_no;
             $whatsapp_cloud_api = new WhatsAppCloudApi([
-                'from_phone_number_id' => '961224797063761',
-                'access_token' => 'EAAaIAlVcpmEBQCrP9NZCuez1ZA8F3dtGAVPXXrO2BlB971UBw6C3MBOH9qe3DsoWavjjKccZC164hSPFgU3b5ttTKmnRCOOZAC86cpZA2TslmWm605oEov3v8I83dV2BWJlAjqmaZAfoAIqZCz1x3kPXefKsZCi5poq6uYCHP3rcqHOZBzVx7dt16zfv85uKbeAZDZD',
+                'from_phone_number_id' => env('WHATSAPP_PHONE_ID'),
+                'access_token' => env('WHATSAPP_TOKEN'),
             ]);
             // dd($message_template,$number);
             $whatsapp_cloud_api->sendTemplate($number, $message_template, 'en', $components);
